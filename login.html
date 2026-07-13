@@ -11,11 +11,10 @@
     </style>
 </head>
 <body>
-    <h2 id="loading">กำลังโหลด กรุณารอสักครู่...</h2>
+    <h2 id="loading">กำลังเตรียมหน้าใช้งาน กรุณารอสักครู่...</h2>
 
     <script>
         const MY_LIFF_ID = "2010429320-3JYooRcB"; 
-        // URL ของ Google Apps Script ของคุณ
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxlxoIs6kVZxwkFjR_3YXC-K6PY6hunRXgoRKnpkcQXS6ZGuqQWLjkgNMdnBvAGQ_jLHQ/exec";
 
         async function main() {
@@ -25,8 +24,12 @@
                 const profile = await liff.getProfile();
                 const uid = profile.userId;
                 
-                // นำ UID ที่ได้ ส่งเป็นพารามิเตอร์ไปเปิดหน้าลงทะเบียน (register) ของระบบหลัก
-                window.location.href = GAS_URL + "?page=leave&uid=" + uid;
+                // ดึงค่า target จาก URL (เช่น ?target=leave หรือ ?target=booking)
+                const urlParams = new URLSearchParams(window.location.search);
+                const target = urlParams.get('target') || 'leave'; // ถ้าไม่ระบุ ให้ไปหน้า leave
+                
+                // ส่งต่อไปยัง Google Apps Script โดยใช้ค่า target ที่ดึงมาได้
+                window.location.href = GAS_URL + "?page=" + target + "&uid=" + uid;
             } else {
                 liff.login();
             }
