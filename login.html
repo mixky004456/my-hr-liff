@@ -16,7 +16,7 @@
     <script>
         const MY_LIFF_ID = "2010429320-3JYooRcB"; 
         // URL ของ Google Apps Script ของคุณ
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxlxoIs6kVZxwkFjR_3YXC-K6PY6hunRXgoRKnpkcQXS6ZGuqQWLjkgNMdnBvAGQ_jLHQ/exec?page=leave";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxlxoIs6kVZxwkFjR_3YXC-K6PY6hunRXgoRKnpkcQXS6ZGuqQWLjkgNMdnBvAGQ_jLHQ/exec";
 
         async function main() {
             await liff.init({ liffId: MY_LIFF_ID });
@@ -26,7 +26,7 @@
                 const uid = profile.userId;
                 
                 // นำ UID ที่ได้ ส่งเป็นพารามิเตอร์ไปเปิดหน้าลงทะเบียน (register) ของระบบหลัก
-                window.location.href = GAS_URL + "?page=register&uid=" + uid;
+                window.location.href = GAS_URL + "?page=leave&uid=" + uid;
             } else {
                 liff.login();
             }
