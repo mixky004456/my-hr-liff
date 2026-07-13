@@ -1,112 +1,37 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ</title>
+    <title>กำลังตรวจสอบข้อมูล...</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        .profile-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        img {
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            margin-bottom: 15px;
-        }
-
-        button {
-            background-color: #00B900;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #loading {
-            color: #555;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        #error-msg {
-            color: red;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
+        body { font-family: sans-serif; text-align: center; padding: 50px 20px; background-color: #f4f4f4; }
+        #loading { color: #00B900; font-weight: bold; font-size: 20px; }
     </style>
 </head>
-
 <body>
-
-    <h2 id="loading">1. กำลังเชื่อมต่อ LIFF...</h2>
-    <p id="error-msg"></p> <!-- จุดที่จะแสดงข้อความ Error -->
-
-    <div id="profile-box" class="profile-box">
-        <img id="pictureUrl" src="" alt="Profile">
-        <h3 id="displayName"></h3>
-        <p style="font-size: 12px; color: gray;">UID: <span id="userId"></span></p>
-        <p style="color: green; font-weight: bold;">ล็อกอินสำเร็จ!</p>
-        <button onclick="liff.logout(); window.location.reload();">ออกจากระบบ</button>
-    </div>
+    <h2 id="loading">กำลังเตรียมหน้าลงทะเบียน กรุณารอสักครู่...</h2>
 
     <script>
-        const MY_LIFF_ID = "2010429320-3JYooRcB";
+        const MY_LIFF_ID = "2010429320-3JYooRcB"; 
+        // URL ของ Google Apps Script ของคุณ
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxIxols6kVZxwkFjR_3YXC-K6PY6hunRXgoRKnkpcQXS6ZGuqQWLjkgNMdnBvAGQ_jLHQ/exec";
 
-        async function initializeLiff() {
-            try {
-                await liff.init({ liffId: MY_LIFF_ID });
-
-                if (liff.isLoggedIn()) {
-                    document.getElementById("loading").innerText = "2. ล็อกอินแล้ว กำลังดึงข้อมูลโปรไฟล์...";
-                    await showProfile();
-                } else {
-                    document.getElementById("loading").innerText = "2. ยังไม่ได้ล็อกอิน กำลังพาไปหน้า LINE...";
-                    liff.login();
-                }
-            } catch (err) {
-                document.getElementById("loading").innerText = "❌ เกิดข้อผิดพลาดตอนเชื่อมต่อ LIFF";
-                document.getElementById("error-msg").innerText = "รายละเอียด: " + err.message;
-            }
-        }
-
-        async function showProfile() {
-            try {
+        async function main() {
+            await liff.init({ liffId: MY_LIFF_ID });
+            
+            if (liff.isLoggedIn()) {
                 const profile = await liff.getProfile();
-
-                document.getElementById("pictureUrl").src = profile.pictureUrl;
-                document.getElementById("displayName").innerText = profile.displayName;
-                document.getElementById("userId").innerText = profile.userId;
-
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("profile-box").style.display = "block";
-
-            } catch (err) {
-                document.getElementById("loading").innerText = "❌ เกิดข้อผิดพลาดตอนดึงข้อมูลโปรไฟล์";
-                document.getElementById("error-msg").innerText = "รายละเอียด: " + err.message;
+                const uid = profile.userId;
+                
+                // นำ UID ที่ได้ ส่งเป็นพารามิเตอร์ไปเปิดหน้าลงทะเบียน (register) ของระบบหลัก
+                window.location.href = GAS_URL + "?page=register&uid=" + uid;
+            } else {
+                liff.login();
             }
         }
-
-        initializeLiff();
+        main();
     </script>
 </body>
-
 </html>
