@@ -376,9 +376,20 @@
 
                     let html = '';
                     bookings.forEach(b => {
-                        let statusBadge = (b.status === 'อนุมัติ')
-                            ? `<span class="badge bg-success float-end">✅ อนุมัติ</span>`
-                            : `<span class="badge bg-secondary float-end">${b.status}</span>`;
+                        let statusBadge = '';
+                        if (b.status === 'อนุมัติ') {
+                            statusBadge = `<span class="badge bg-success float-end">✅ อนุมัติ</span>`;
+                        } else if (b.status === 'ยกเลิก') {
+                            statusBadge = `<span class="badge bg-secondary float-end">ยกเลิก</span>`;
+                        } else if (b.status === 'ไม่อนุมัติ') {
+                            statusBadge = `<span class="badge bg-danger float-end">❌ ไม่อนุมัติ</span>`;
+                        } else {
+                            statusBadge = `<span class="badge bg-warning text-dark float-end">⏳ รออนุมัติ</span>`;
+                        }
+
+                        let cancelBtn = (b.status === 'ยกเลิก' || b.status === 'ไม่อนุมัติ')
+                            ? ''
+                            : `<button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" style="border-radius: 10px;" onclick="cancelMyBooking(${b.rowIndex}, this)">❌ ยกเลิกคิวนี้</button>`;
 
                         html += `
               <div class="border rounded p-3 mb-3 shadow-sm" style="border-color: #e5e7eb; position: relative;">
@@ -387,7 +398,7 @@
                 <p class="mb-1 text-muted" style="font-size: 0.9rem;"><strong>วันที่:</strong> ${b.useDate}</p>
                 <p class="mb-1 text-muted" style="font-size: 0.9rem;"><strong>เวลา:</strong> ${b.startTime} - ${b.endTime}</p>
                 <p class="mb-2 text-muted" style="font-size: 0.9rem;"><strong>หัวข้อ:</strong> ${b.topic}</p>
-                <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" style="border-radius: 10px;" onclick="cancelMyBooking(${b.rowIndex}, this)">❌ ยกเลิกคิวนี้</button>
+                ${cancelBtn}
               </div>
             `;
                     });
