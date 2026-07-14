@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ฟอร์มแจ้งลางาน</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- เพิ่ม Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: #ffffff;
+            color: #16a34a;
+            padding: 35px 20px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-header-custom h3 {
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-body {
+            padding: 0 30px 40px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 14px;
+            padding: 14px 18px;
+            border: 1.5px solid #e2e8f0;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+            background-color: #ffffff;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+            border-radius: 14px;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #fff;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+            color: #fff;
+        }
+
+        /* กล่องข้อมูลพนักงาน */
+        .emp-info {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emp-avatar {
+            width: 50px;
+            height: 50px;
+            background: #dbeafe;
+            color: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            background: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-label {
+            flex: 0 0 75px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 14px;
+            background: #e2e8f0;
+            border-radius: 7px;
+            margin: 0 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+            border-radius: 7px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar-fill.warning {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .progress-bar-fill.danger {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .progress-text {
+            flex: 0 0 100px;
+            text-align: right;
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px 8px;
+                align-items: flex-start;
+            }
+
+            .card-body {
+                padding: 16px 16px 24px !important;
+            }
+
+            .card-header-custom {
+                padding: 24px 16px 20px;
+            }
+
+            .card-header-custom h3 {
+                font-size: 1.1rem;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            .form-control,
+            .form-select {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+
+            .quota-label {
+                flex: 0 0 60px;
+                font-size: 0.85rem;
+            }
+
+            .progress-text {
+                flex: 0 0 80px;
+            }
+
+            .row .col-6 {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header-custom">
+                <h3><i class="bi bi-file-earmark-text-fill text-success mb-2"
+                        style="font-size: 2rem; display: block;"></i>
+                    ฟอร์มแจ้งลางาน</h3>
+            </div>
+            <div class="card-body">
+
+                <div id="loadingSection" class="text-center py-4">
+                    <div class="spinner-border text-primary" style="color: #16a34a !important;" role="status"></div>
+                    <p class="mt-2 text-muted">กำลังตรวจสอบข้อมูลพนักงาน...</p>
+                </div>
+
+                <div id="formSection" style="display: none;">
+                    <div class="emp-info">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div class="emp-avatar" id="avatarIcon">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 2px; color: #1e293b; font-weight: 600;" id="displayEmpName">
+                                    ชื่อพนักงาน</h5>
+                                <div class="text-muted-custom" style="font-size: 0.85rem; color: #64748b;">
+                                    <i class="bi bi-credit-card-2-front"></i> <span id="displayEmpId"></span>
+                                    &nbsp;|&nbsp;
+                                    <i class="bi bi-diagram-3"></i> <span id="displayDept"></span>
+                                    <br><i class="bi bi-briefcase"></i> <span id="displayPosition"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quotaProgressContainer">
+                            <div class="progress-row">
+                                <div class="progress-label">ลาพักร้อน</div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="pb-vacation" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text" id="pt-vacation">-</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">ลาป่วย</div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="pb-sick" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text" id="pt-sick">-</div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="progress-label">ลากิจ</div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="pb-personal" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text" id="pt-personal">-</div>
+                            </div>
+                        </div>
+
+                        <div id="otherQuotasContainer"
+                            style="display: none; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+                            <div class="progress-row"
+                                style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
+                                <div class="progress-label" style="flex: 1;">ลาคลอด <span
+                                        style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(สูงสุด 60
+                                        วัน/ครั้ง)</span></div>
+                                <div class="progress-text" style="flex: 1; text-align: right;" id="qt-maternity">-</div>
+                            </div>
+                            <div class="progress-row"
+                                style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
+                                <div class="progress-label" style="flex: 1;">ทำหมัน</div>
+                                <div class="progress-text" style="flex: 1; text-align: right;" id="qt-sterilization">-
+                                </div>
+                            </div>
+                            <div class="progress-row"
+                                style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
+                                <div class="progress-label" style="flex: 1;">รับราชการทหาร</div>
+                                <div class="progress-text" style="flex: 1; text-align: right;" id="qt-military">-</div>
+                            </div>
+                            <div class="progress-row"
+                                style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
+                                <div class="progress-label" style="flex: 1;">อบรม</div>
+                                <div class="progress-text" style="flex: 1; text-align: right;" id="qt-training">-</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <button type="button" id="btnToggleOtherQuotas" onclick="toggleOtherQuotas()"
+                                style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; padding: 5px 15px; font-size: 0.8rem; color: #475569; cursor: pointer; transition: 0.2s;">
+                                + ดูสิทธิการลาอื่นๆ อีก 4 ประเภท ▼
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <form id="leaveForm" onsubmit="handleFormSubmit(event)">
+                        <!-- 🔥 จุดสำคัญ: ใช้ <?= uid ?> เพื่อรับค่าจาก Google Apps Script โดยตรง -->
+                        <input type="hidden" id="userId" name="userId" value="<?= uid ?>">
+                        <input type="hidden" id="empName" name="empName" value="">
+                        <input type="hidden" id="empId" name="empId" value="">
+                        <input type="hidden" id="department" name="department" value="">
+                        <input type="hidden" id="position" name="position" value="">
+                        <input type="hidden" id="leaveRemain" name="leaveRemain" value="">
+
+                        <div class="mb-4">
+                            <label class="form-label"><i class="bi bi-list-check"></i> ประเภทการลา</label>
+                            <select class="form-select" id="leaveType" name="leaveType" onchange="updateRemain()"
+                                required>
+                                <option value="" disabled selected>เลือกประเภทการลา...</option>
+                                <option value="ลาพักร้อน">ลาพักร้อน</option>
+                                <option value="ลาป่วย">ลาป่วย</option>
+                                <option value="ลากิจ">ลากิจ</option>
+                                <option value="ลาคลอด">ลาคลอด</option>
+                                <option value="ทำหมัน">ทำหมัน</option>
+                                <option value="รับราชการทหาร">รับราชการทหาร</option>
+                                <option value="อบรม">อบรม</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="emergencyLeaveGroup"
+                            style="display:none; background: #fffbeb; border: 1px dashed #fbbf24; padding: 10px; border-radius: 8px;">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="isEmergency" name="isEmergency"
+                                    style="cursor: pointer; margin-left: 0; width: 2.5em;">
+                                <label class="form-check-label" for="isEmergency"
+                                    style="font-weight: 500; color: #b45309; cursor: pointer; margin-left: 10px;">
+                                    ลาฉุกเฉิน <span style="font-size: 0.85rem;">(สามารถลาวันที่ทำรายการได้เลย)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4" id="durationModeGroup" style="display:none;">
+                            <label class="form-label"><i class="bi bi-calendar-range"></i> รูปแบบการลา</label>
+                            <select class="form-select" id="durationMode" name="durationMode"
+                                onchange="updateDurationFields()" required>
+                                <option value="" disabled selected>เลือกรูปแบบ...</option>
+                            </select>
+                        </div>
+
+                        <div id="dateRangeGroup" style="display:none;">
+                            <div class="row">
+                                <div class="col-6 mb-4">
+                                    <label class="form-label"><i class="bi bi-calendar-plus"></i> วันที่เริ่มต้น</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate"
+                                        onchange="validateDateInput(this)">
+                                </div>
+                                <div class="col-6 mb-4">
+                                    <label class="form-label"><i class="bi bi-calendar-minus"></i> วันที่สิ้นสุด</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate"
+                                        onchange="validateDateInput(this)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="singleDateGroup" style="display:none;">
+                            <div class="mb-4">
+                                <label class="form-label"><i class="bi bi-calendar-day"></i> วันที่ลา</label>
+                                <input type="date" class="form-control" id="singleDate" name="singleDate"
+                                    onchange="validateDateInput(this)">
+                            </div>
+                        </div>
+
+                        <div id="personalTimeGroup"
+                            style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; margin-bottom:16px;">
+                            <label class="form-label" style="color:#16a34a; font-weight:600;">⏰
+                                ช่วงเวลาที่ต้องการลา</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label" style="font-size:0.9rem;">เวลาเริ่ม</label>
+                                    <input type="time" class="form-control" id="personalStartTime"
+                                        name="personalStartTime" step="1800">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label" style="font-size:0.9rem;">เวลาสิ้นสุด</label>
+                                    <input type="time" class="form-control" id="personalEndTime" name="personalEndTime"
+                                        step="1800">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="halfDayGroup" style="display:none;">
+                            <div class="mb-4">
+                                <label class="form-label"><i class="bi bi-clock-history"></i> ช่วงเวลา</label>
+                                <select class="form-select" id="halfDayPeriod" name="halfDayPeriod">
+                                    <option value="" disabled selected>เลือกช่วงเวลา...</option>
+                                    <option value="ครึ่งวันเช้า">ครึ่งวันเช้า</option>
+                                    <option value="ครึ่งวันบ่าย">ครึ่งวันบ่าย</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label"><i class="bi bi-chat-text"></i> เหตุผลการลา</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3"
+                                placeholder="ระบุเหตุผลที่ต้องการลา" required></textarea>
+                        </div>
+
+                        <div id="medicalCertGroup" class="mb-4" style="display: none;">
+                            <label class="form-label" id="medicalCertLabel"><i class="bi bi-image"></i>
+                                อัปโหลดใบรับรองแพทย์ <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="medicalCert" accept="image/*">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="submitBtn"><i
+                                class="bi bi-send-fill"></i> ส่งคำขอแจ้งลางาน</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let empQuotas = {};
+
+        function formatQuota(days) {
+            if (!days || days <= 0) return '0 วัน';
+            let d = Math.floor(days);
+            let remainDays = days - d;
+            let totalMins = remainDays * 480;
+            let h = Math.floor(totalMins / 60);
+            let m = Math.round(totalMins % 60);
+
+            let res = '';
+            if (d > 0) res += d + ' วัน ';
+            if (h > 0) res += h + ' ชม. ';
+            if (m > 0) res += m + ' นาที';
+            return res.trim() || '0 วัน';
+        }
+
+        // 🔥 ปรับระบบโหลดหน้าใหม่ ไม่ต้องง้อ LIFF แล้ว!
+        window.onload = function () {
+            const userId = document.getElementById('userId').value;
+
+            // ถ้ามี UID ส่งมาจากหน้า GitHub ให้โหลดข้อมูลพนักงานได้เลย
+            if (userId && userId !== "undefined" && userId !== "") {
+                loadEmployeeData(userId);
+            } else {
+                // ถ้าไม่มี UID ให้โชว์ Error
+                document.getElementById('loadingSection').style.display = 'none';
+                document.querySelector('.card-body').innerHTML = '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลผู้ใช้งาน</h4><p>กรุณาเข้าสู่ระบบผ่านลิงก์ในแชท LINE อีกครั้ง</p></div>';
+            }
+        };
+
+        function loadEmployeeData(userId) {
+            google.script.run
+                .withSuccessHandler(function (emp) {
+                    document.getElementById('loadingSection').style.display = 'none';
+                    if (!emp) {
+                        document.querySelector('.card-body').innerHTML = '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลพนักงาน</h4><p>คุณไม่มีสิทธิ์ใช้งานระบบนี้ หรือยังไม่ได้ลงทะเบียนผูกบัญชี</p></div>';
+                        return;
+                    }
+
+                    document.getElementById('formSection').style.display = 'block';
+                    document.getElementById('displayEmpName').innerText = emp.name;
+                    document.getElementById('displayEmpId').innerText = emp.empId;
+                    document.getElementById('displayPosition').innerText = emp.position || "-";
+                    document.getElementById('displayDept').innerText = emp.department || "-";
+                    document.getElementById('empName').value = emp.name;
+                    document.getElementById('empId').value = emp.empId || "";
+                    document.getElementById('department').value = emp.department || "";
+                    document.getElementById('position').value = emp.position || "";
+
+                    function updateProgress(idPb, idPt, usedNum, maxNum) {
+                        let used = parseFloat(usedNum) || 0;
+                        let remain = maxNum - used;
+                        if (remain < 0) remain = 0;
+                        let pct = (used / maxNum) * 100;
+                        if (pct > 100) pct = 100;
+
+                        let pb = document.getElementById(idPb);
+                        let pt = document.getElementById(idPt);
+
+                        pb.style.width = pct + '%';
+                        if (pct >= 90) {
+                            pb.className = 'progress-bar-fill danger';
+                        } else if (pct >= 70) {
+                            pb.className = 'progress-bar-fill warning';
+                        } else {
+                            pb.className = 'progress-bar-fill';
+                        }
+
+                        let displayUsed = (used % 1 === 0) ? used : used.toFixed(2);
+                        let displayRemain = (remain % 1 === 0) ? remain : remain.toFixed(2);
+                        pt.innerHTML = `<span style="color:#0f172a; font-weight:600;">${displayUsed} / ${maxNum} วัน</span><br><span style="font-size:0.75rem;">(เหลือ ${displayRemain})</span>`;
+                    }
+
+                    updateProgress('pb-vacation', 'pt-vacation', emp.used['ลาพักร้อน'], 6);
+                    updateProgress('pb-sick', 'pt-sick', emp.used['ลาป่วย'], 30);
+                    updateProgress('pb-personal', 'pt-personal', emp.used['ลากิจ'], 3);
+
+                    document.getElementById('qt-maternity').innerHTML = `<span style="color:#0f172a; font-weight:600;">${emp.used['ลาคลอด_count'] || 0} / 1 ครั้ง</span>`;
+                    document.getElementById('qt-sterilization').innerHTML = `<span style="color:#0f172a; font-weight:600;">${emp.used['ทำหมัน_count'] || 0} / 1 ครั้ง</span>`;
+                    document.getElementById('qt-military').innerHTML = `<span style="color:#0f172a; font-weight:600;">${emp.used['รับราชการทหาร_count'] || 0} / 1 ครั้ง</span>`;
+                    document.getElementById('qt-training').innerHTML = `<span style="color:#0f172a; font-weight:600;">${emp.used['อบรม_count'] || 0} / 2 ครั้ง</span>`;
+
+                    empQuotas = emp.used;
+                })
+                .withFailureHandler(function (error) {
+                    Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message, 'error');
+                })
+                .getEmployeeData(userId);
+        }
+
+        function toggleOtherQuotas() {
+            let container = document.getElementById('otherQuotasContainer');
+            let btn = document.getElementById('btnToggleOtherQuotas');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.innerHTML = '- ซ่อนสิทธิการลาอื่นๆ ▲';
+            } else {
+                container.style.display = 'none';
+                btn.innerHTML = '+ ดูสิทธิการลาอื่นๆ อีก 4 ประเภท ▼';
+            }
+        }
+
+        function getOffsetDate(daysOffset, skipWeekends) {
+            let d = new Date();
+            d.setHours(0, 0, 0, 0);
+            let added = 0;
+            let step = daysOffset > 0 ? 1 : -1;
+            let target = Math.abs(daysOffset);
+
+            while (added < target) {
+                d.setDate(d.getDate() + step);
+                if (skipWeekends) {
+                    if (d.getDay() !== 0 && d.getDay() !== 6) {
+                        added++;
+                    }
+                } else {
+                    added++;
+                }
+            }
+            let yyyy = d.getFullYear();
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function validateDateInput(input) {
+            if (input.min && input.value && input.value < input.min) {
+                Swal.fire('ไม่อนุญาต', 'เงื่อนไขวันที่ไม่ถูกต้อง', 'warning');
+                input.value = '';
+            }
+            if (input.max && input.value && input.value > input.max) {
+                Swal.fire('ไม่อนุญาต', 'เงื่อนไขวันที่ไม่ถูกต้อง', 'warning');
+                input.value = '';
+            }
+        }
+
+        function updateRemain() {
+            let type = document.getElementById('leaveType').value;
+            if (type && empQuotas[type] !== undefined) {
+                document.getElementById('leaveRemain').value = empQuotas[type];
+            }
+
+            let minDateStr = '';
+            let maxDateStr = '';
+            if (type === 'ลากิจ' || type === 'ลาพักร้อน' || type === 'อบรม' || type === 'รับราชการทหาร') {
+                minDateStr = '';
+            } else if (type === 'ลาคลอด') {
+                minDateStr = getOffsetDate(-5, false);
+            } else if (type === 'ทำหมัน') {
+                minDateStr = getOffsetDate(-3, false);
+            }
+
+            document.getElementById('startDate').min = minDateStr;
+            document.getElementById('endDate').min = minDateStr;
+            document.getElementById('singleDate').min = minDateStr;
+
+            document.getElementById('startDate').max = maxDateStr;
+            document.getElementById('endDate').max = maxDateStr;
+            document.getElementById('singleDate').max = maxDateStr;
+
+            let certGroup = document.getElementById('medicalCertGroup');
+            let certInput = document.getElementById('medicalCert');
+            let certLabel = document.getElementById('medicalCertLabel');
+
+            if (type === 'ลาป่วย') {
+                certGroup.style.display = 'block';
+                certInput.required = false;
+                if (certLabel) certLabel.innerHTML = 'อัปโหลดใบรับรองแพทย์ <span class="text-muted" style="font-size:0.8rem;">(ถ้ามี หรือนำมาส่ง HR ภายหลัง)</span>';
+            } else if (type === 'รับราชการทหาร') {
+                certGroup.style.display = 'block';
+                certInput.required = true;
+                if (certLabel) certLabel.innerHTML = 'อัปโหลดเอกสารหมายเรียก <span class="text-danger">*</span>';
+            } else {
+                certGroup.style.display = 'none';
+                certInput.required = false;
+                certInput.value = '';
+            }
+
+            if (type === 'ลากิจ') {
+                document.getElementById('emergencyLeaveGroup').style.display = 'block';
+            } else {
+                document.getElementById('emergencyLeaveGroup').style.display = 'none';
+                document.getElementById('isEmergency').checked = false;
+            }
+
+            let dMode = document.getElementById('durationMode');
+            let dGroup = document.getElementById('durationModeGroup');
+            dGroup.style.display = 'block';
+            dMode.innerHTML = '<option value="" disabled selected>เลือกรูปแบบ...</option>';
+
+            if (type === 'ลาป่วย' || type === 'ลากิจ' || type === 'ลาคลอด' || type === 'ทำหมัน' || type === 'รับราชการทหาร' || type === 'อบรม') {
+                dMode.innerHTML += '<option value="เป็นวัน">เป็นวัน</option>';
+                if (type === 'ลาป่วย' || type === 'ลากิจ') {
+                    dMode.innerHTML += '<option value="เป็นชั่วโมง/นาที">เป็นชั่วโมง/นาที</option>';
+                }
+            } else if (type === 'ลาพักร้อน') {
+                dMode.innerHTML += '<option value="เต็มวัน">เต็มวัน</option>';
+                dMode.innerHTML += '<option value="ครึ่งวัน">ครึ่งวัน</option>';
+            }
+            dMode.value = '';
+            updateDurationFields();
+        }
+
+        function updateDurationFields() {
+            let dMode = document.getElementById('durationMode').value;
+
+            document.getElementById('dateRangeGroup').style.display = 'none';
+            document.getElementById('singleDateGroup').style.display = 'none';
+            document.getElementById('halfDayGroup').style.display = 'none';
+
+            document.getElementById('startDate').required = false;
+            document.getElementById('endDate').required = false;
+            document.getElementById('singleDate').required = false;
+            document.getElementById('halfDayPeriod').required = false;
+            document.getElementById('personalTimeGroup').style.display = 'none';
+
+            if (dMode === 'เป็นวัน' || dMode === 'เต็มวัน') {
+                document.getElementById('dateRangeGroup').style.display = 'block';
+                document.getElementById('startDate').required = true;
+                document.getElementById('endDate').required = true;
+            } else if (dMode === 'เป็นชั่วโมง/นาที') {
+                document.getElementById('singleDateGroup').style.display = 'block';
+                document.getElementById('singleDate').required = true;
+                let currentType = document.getElementById('leaveType').value;
+                if (currentType === 'ลากิจ') {
+                    document.getElementById('personalTimeGroup').style.display = 'block';
+                }
+            } else if (dMode === 'ครึ่งวัน') {
+                document.getElementById('singleDateGroup').style.display = 'block';
+                document.getElementById('halfDayGroup').style.display = 'block';
+                document.getElementById('singleDate').required = true;
+                document.getElementById('halfDayPeriod').required = true;
+            }
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            let type = document.getElementById('leaveType').value;
+            let dMode = document.getElementById('durationMode').value;
+
+            let startD = '', endD = '', diffDays = 0, durationText = '';
+            if (dMode === 'เป็นวัน' || dMode === 'เต็มวัน') {
+                startD = document.getElementById('startDate').value;
+                endD = document.getElementById('endDate').value;
+                let s = new Date(startD);
+                let e = new Date(endD);
+                if (e < s) { Swal.fire('ข้อผิดพลาด', 'วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น', 'warning'); return; }
+                diffDays = Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1;
+                durationText = `${diffDays} วัน`;
+            } else if (dMode === 'ครึ่งวัน') {
+                startD = document.getElementById('singleDate').value;
+                endD = startD;
+                diffDays = 0.5;
+                durationText = document.getElementById('halfDayPeriod').value;
+            } else if (dMode === 'เป็นชั่วโมง/นาที') {
+                startD = document.getElementById('singleDate').value;
+                endD = startD;
+                let pStart = document.getElementById('personalStartTime').value;
+                let pEnd = document.getElementById('personalEndTime').value;
+                if (!pStart || !pEnd) { Swal.fire('ข้อผิดพลาด', 'กรุณาระบุเวลาเริ่มและเวลาสิ้นสุด', 'warning'); return; }
+                let [sh, sm] = pStart.split(':').map(Number);
+                let [eh, em] = pEnd.split(':').map(Number);
+                let totalMins = (eh * 60 + em) - (sh * 60 + sm);
+                if (totalMins <= 0) { Swal.fire('ข้อผิดพลาด', 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม', 'warning'); return; }
+                diffDays = totalMins / 480;
+                let hrs = Math.floor(totalMins / 60);
+                let mins = totalMins % 60;
+                durationText = '';
+                if (hrs > 0) durationText += `${hrs} ชั่วโมง `;
+                if (mins > 0) durationText += `${mins} นาที`;
+                durationText = durationText.trim() + ' (' + pStart + ' - ' + pEnd + ')';
+            }
+
+            let minAllowed = '';
+            let msg = '';
+            let isEmergency = document.getElementById('isEmergency') && document.getElementById('isEmergency').checked;
+
+            if (type === 'ลากิจ' || type === 'ลาพักร้อน' || type === 'อบรม') {
+                if (type === 'ลากิจ' && isEmergency) {
+                    minAllowed = getOffsetDate(0, false);
+                    msg = `ไม่สามารถลาย้อนหลังได้`;
+                } else {
+                    minAllowed = getOffsetDate(3, true);
+                    msg = `ต้องทำรายการล่วงหน้าอย่างน้อย 3 วันทำการ\n(ตั้งแต่ ${minAllowed})`;
+                }
+            } else if (type === 'รับราชการทหาร') {
+                minAllowed = getOffsetDate(7, true);
+                msg = `ต้องทำรายการล่วงหน้าอย่างน้อย 7 วันทำการ\n(ตั้งแต่ ${minAllowed})`;
+            } else if (type === 'ลาคลอด') {
+                minAllowed = getOffsetDate(-5, false);
+                msg = `ลาย้อนหลังได้ไม่เกิน 5 วัน\n(ตั้งแต่ ${minAllowed})`;
+            } else if (type === 'ทำหมัน') {
+                minAllowed = getOffsetDate(-3, false);
+                msg = `ลาย้อนหลังได้ไม่เกิน 3 วัน\n(ตั้งแต่ ${minAllowed})`;
+            }
+
+            if (minAllowed && startD < minAllowed) {
+                Swal.fire('ข้อผิดพลาด', msg, 'error');
+                return;
+            }
+
+            let used = empQuotas[type] || 0;
+            if (type === 'ลาพักร้อน') {
+                if (used + diffDays > 6) { Swal.fire('วันลาหมดแล้ว!', `สิทธิ์ลาพักร้อนของคุณใช้ไปแล้ว ${used} วัน (โควตาสูงสุด 6 วัน) ไม่สามารถลาเพิ่มได้ครับ`, 'error'); return; }
+            } else if (type === 'ลาป่วย' || type === 'ลากิจ') {
+                let limit = type === 'ลาป่วย' ? 30 : 3;
+                if (used + diffDays > limit) {
+                    let result = await Swal.fire({
+                        title: 'วันลาหมดแล้ว!',
+                        text: `${type} ของคุณใช้ไปแล้ว ${used} วัน หากรวมครั้งนี้จะเกินกำหนด และจะไม่ได้รับค่าจ้างในส่วนที่เกิน ต้องการดำเนินการต่อหรือไม่?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ตกลง (ดำเนินการต่อ)',
+                        cancelButtonText: 'ยกเลิก'
+                    });
+                    if (!result.isConfirmed) return;
+                }
+            } else if (type === 'ลาคลอด') {
+                let count = empQuotas['ลาคลอด_count'] || 0;
+                if (count >= 1) { Swal.fire('วันลาหมดแล้ว!', `คุณใช้สิทธิ์ลาคลอดครบ 1 ครั้งต่อปีแล้วครับ`, 'error'); return; }
+                if (diffDays > 60) {
+                    let result = await Swal.fire({
+                        title: 'แจ้งเตือน!',
+                        text: `การลาคลอด 1 ครั้ง จะได้รับเงินเดือนสูงสุด 60 วัน (ครั้งนี้คุณลา ${diffDays} วัน) ในส่วนที่เกิน 60 วันจะไม่ได้รับเงินเดือน ต้องการดำเนินการต่อหรือไม่?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ตกลง (ดำเนินการต่อ)',
+                        cancelButtonText: 'ยกเลิก'
+                    });
+                    if (!result.isConfirmed) return;
+                }
+            } else if (type === 'ทำหมัน') {
+                let count = empQuotas['ทำหมัน_count'] || 0;
+                if (count >= 1) { Swal.fire('วันลาหมดแล้ว!', `สิทธิ์ลาทำหมันใช้ได้เพียง 1 ครั้งเท่านั้นครับ`, 'error'); return; }
+            } else if (type === 'รับราชการทหาร') {
+                let count = empQuotas['รับราชการทหาร_count'] || 0;
+                if (count >= 1) { Swal.fire('วันลาหมดแล้ว!', `สิทธิ์ลารับราชการทหารใช้ได้เพียง 1 ครั้งเท่านั้นครับ`, 'error'); return; }
+            } else if (type === 'อบรม') {
+                let count = empQuotas['อบรม_count'] || 0;
+                if (count >= 2) { Swal.fire('วันลาหมดแล้ว!', `คุณใช้สิทธิ์ลาอบรมครบ 2 ครั้งต่อปีแล้วครับ`, 'error'); return; }
+                if (diffDays > 2) { Swal.fire('ข้อผิดพลาด', `ลาอบรมแต่ละครั้ง ลาได้ไม่เกิน 2 วันครับ`, 'error'); return; }
+            }
+
+            let certInput = document.getElementById('medicalCert');
+            if (type === 'ลาป่วย' && diffDays >= 3 && certInput.files.length === 0) {
+                await Swal.fire({
+                    title: 'แจ้งเตือน',
+                    text: 'คุณลาป่วยตั้งแต่ 3 วันขึ้นไป กรุณานำใบรับรองแพทย์ตัวจริงมามอบให้ฝ่ายบุคคล (HR) ในวันที่กลับมาทำงานนะครับ',
+                    icon: 'info',
+                    confirmButtonText: 'รับทราบ',
+                    confirmButtonColor: '#16a34a'
+                });
+            }
+
+            let reasonEl = document.getElementById('reason');
+            let reason = reasonEl ? reasonEl.value : '';
+            if (type === 'ลากิจ' && isEmergency) {
+                reason = "[ลาฉุกเฉิน] " + reason;
+            }
+
+            let submitBtn = document.querySelector('button[type="submit"]');
+            let originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>กำลังส่งข้อมูล...';
+
+            const form = document.getElementById('leaveForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            data.startDate = startD;
+            data.endDate = endD;
+            data.diffDays = diffDays;
+            data.reason = reason;
+            data.durationText = durationText;
+            data.qVacation = empQuotas['ลาพักร้อน'] || 0;
+            data.qSick = empQuotas['ลาป่วย'] || 0;
+            data.qPersonal = empQuotas['ลากิจ'] || 0;
+
+            if (type === 'ลาป่วย' && certInput.files.length > 0) {
+                let file = certInput.files[0];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let dataUrl = e.target.result;
+                    data.certBase64 = dataUrl.split(',')[1];
+                    data.certMime = file.type;
+                    data.certName = file.name;
+                    submitDataToBackend(data, submitBtn, originalText);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                submitDataToBackend(data, submitBtn, originalText);
+            }
+        }
+
+        function submitDataToBackend(data, submitBtn, originalText) {
+            google.script.run
+                .withSuccessHandler(function (response) {
+                    document.body.innerHTML = `
+            <div class="container">
+              <div class="text-center py-5 fade-in">
+                <div style="font-size: 60px; color: #16a34a; margin-bottom: 20px;">✅</div>
+                <h3 style="color: #16a34a; font-weight: 600;">ส่งคำขอลางานเรียบร้อย</h3>
+                <p class="text-muted mt-3">ระบบได้บันทึกการลางานของคุณเรียบร้อยแล้ว<br>โควตาวันลาของคุณถูกหักออกจากระบบอัตโนมัติ</p>
+              </div>
+            </div>
+          `;
+                })
+                .withFailureHandler(function (error) {
+                    document.body.innerHTML = `
+            <div class="container">
+              <div class="text-center py-5 fade-in">
+                <div style="font-size: 60px; color: #ff4d4d; margin-bottom: 20px;">❌</div>
+                <h3 style="color: #ff4d4d; font-weight: 600;">เกิดข้อผิดพลาด</h3>
+                <p class="text-muted mt-3">ระบบพบปัญหาขัดข้อง กรุณาแคปหน้าจอนี้ส่งให้ผู้ดูแลระบบ:<br><br><strong style="color:red;">${error.message}</strong></p>
+                <button class="btn btn-secondary mt-4" onclick="location.reload()">ลองใหม่อีกครั้ง</button>
+              </div>
+            </div>
+          `;
+                })
+                .processLeaveForm(data);
+        }
+    </script>
+</body>
+
+</html>

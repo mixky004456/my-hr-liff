@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ระบบจองห้องประชุม</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- เพิ่ม Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: #ffffff;
+            color: #16a34a;
+            padding: 35px 20px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-header-custom h3 {
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-body {
+            padding: 0 30px 40px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 14px;
+            padding: 14px 18px;
+            border: 1.5px solid #e2e8f0;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+            background-color: #ffffff;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+            border-radius: 14px;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 15px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner-border {
+            color: #16a34a;
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* กล่องข้อมูลพนักงาน */
+        .emp-info {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emp-avatar {
+            width: 50px;
+            height: 50px;
+            background: #dbeafe;
+            color: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px 8px;
+                align-items: flex-start;
+            }
+
+            .card-body {
+                padding: 16px 16px 24px !important;
+            }
+
+            .card-header-custom {
+                padding: 24px 16px 20px;
+            }
+
+            .card-header-custom h3 {
+                font-size: 1.1rem;
+            }
+
+            .form-control,
+            .form-select {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+
+            .btn-submit {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            .row .col-6,
+            .row .col-md-6 {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card" id="formCard">
+            <div class="card-header-custom">
+                <h3><i class="bi bi-calendar-check-fill text-success mb-2" style="font-size: 2rem; display: block;"></i>
+                    จองห้องประชุม</h3>
+                <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">ระบบจะดึงข้อมูลของคุณอัตโนมัติ</p>
+                <button type="button" class="btn btn-sm btn-outline-success mt-3"
+                    style="border-radius: 20px; padding: 5px 15px;" onclick="showMyBookings()"><i
+                        class="bi bi-card-checklist"></i> การจองของฉัน</button>
+            </div>
+            <div class="card-body">
+
+                <form id="roomForm" onsubmit="handleFormSubmit(event)">
+                    <!-- Hidden Fields for Submission -->
+                    <input type="hidden" id="userId" name="userId" value="<?= uid ?>">
+                    <input type="hidden" id="empName" name="empName" value="">
+                    <input type="hidden" id="empId" name="empId" value="">
+                    <input type="hidden" id="position" name="position" value="">
+                    <input type="hidden" id="department" name="department" value="">
+
+                    <!-- Employee Profile Card -->
+                    <div class="emp-info" id="empInfoBox">
+                        <div class="emp-avatar" id="avatarIcon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <h5 style="margin-bottom: 2px; color: #1e293b; font-weight: 600;" id="displayEmpName">
+                                ชื่อพนักงาน</h5>
+                            <div class="text-muted-custom" style="font-size: 0.85rem; color: #64748b;">
+                                <i class="bi bi-credit-card-2-front"></i> <span id="displayEmpId">-</span> &nbsp;|&nbsp;
+                                <i class="bi bi-diagram-3"></i> <span id="displayDept">-</span>
+                                <br><i class="bi bi-briefcase"></i> <span id="displayPosition">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-door-open"></i> ห้องประชุมที่จะขอใช้</label>
+                        <select class="form-select" id="roomName" name="roomName" required onchange="fetchBookings()">
+                            <option value="" disabled selected>-- เลือกห้องประชุม --</option>
+                            <option value="ห้องประชุมชั้นที่ 1 ห้องเล็ก">ห้องประชุมชั้นที่ 1 ห้องเล็ก</option>
+                            <option value="ห้องประชุมชั้นที่ 1 ห้องใหญ่">ห้องประชุมชั้นที่ 1 ห้องใหญ่</option>
+                            <option value="ห้องประชุมชั้นที่ 4">ห้องประชุมชั้นที่ 4</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-chat-text"></i> หัวข้อการประชุม</label>
+                        <input type="text" class="form-control" id="topic" name="topic"
+                            placeholder="ระบุหัวข้อหรือวาระการประชุม" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-people"></i> จำนวนผู้เข้าประชุม (คน)</label>
+                        <input type="number" class="form-control" id="attendees" name="attendees" min="1"
+                            placeholder="เช่น 5" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-calendar-event"></i> วันที่ใช้ห้อง</label>
+                        <input type="date" class="form-control" id="useDate" name="useDate" required
+                            onchange="fetchBookings()">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label"><i class="bi bi-clock"></i> เวลาเริ่ม</label>
+                            <input type="time" class="form-control" id="startTime" name="startTime" required
+                                onchange="checkOverlap()">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label"><i class="bi bi-clock-history"></i> เวลาสิ้นสุด</label>
+                            <input type="time" class="form-control" id="endTime" name="endTime" required
+                                onchange="checkOverlap()">
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Section -->
+                    <div class="mb-3" id="dashboardSection" style="display: none;">
+                        <label class="form-label text-primary" style="font-weight: 600;">📊
+                            คิวที่ถูกจองแล้วในวันนี้</label>
+                        <div id="bookingList" class="p-3 rounded"
+                            style="background-color: #f0fdf4; border: 1px solid #bbf7d0; font-size: 0.95rem; color: #166534;">
+                            <!-- Booking items will appear here -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn"><i class="bi bi-send-fill"></i>
+                        ยืนยันการจองห้อง</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- My Bookings State -->
+        <div class="card" id="myBookingsCard" style="display: none;">
+            <div class="card-header-custom">
+                <h3>📋 การจองของฉัน</h3>
+                <button type="button" class="btn btn-sm btn-outline-secondary mt-3"
+                    style="border-radius: 20px; padding: 5px 15px;" onclick="hideMyBookings()">⬅️
+                    กลับไปหน้าจองห้อง</button>
+            </div>
+            <div class="card-body">
+                <div id="myBookingsLoading" class="text-center py-4" style="display:none;">
+                    <div class="spinner-border text-success" role="status"></div>
+                    <p class="mt-2 text-muted">กำลังโหลดข้อมูล...</p>
+                </div>
+                <div id="myBookingsList"></div>
+            </div>
+        </div>
+
+        <!-- Custom Confirm Modal -->
+        <div id="confirmModal"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+            <div
+                style="background:#fff; border-radius:20px; padding:28px 24px; max-width:320px; width:88%; margin:auto; box-shadow:0 20px 60px rgba(0,0,0,0.25); font-family:'Prompt',sans-serif;">
+                <h5 style="font-weight:600; color:#111; margin-bottom:10px;">⚠️ ยืนยันการยกเลิก</h5>
+                <p style="color:#555; font-size:0.92rem; margin-bottom:20px;">คุณแน่ใจหรือไม่ที่จะยกเลิกการจองนี้?
+                    ระบบจะลบข้อมูลออกจากตารางทันที</p>
+                <div style="display:flex; gap:10px;">
+                    <button id="confirmNo"
+                        style="flex:1; padding:12px; border:1.5px solid #d1d5db; border-radius:12px; background:#fff; color:#555; font-family:'Prompt',sans-serif; font-size:0.95rem; cursor:pointer;">ยกเลิก</button>
+                    <button id="confirmYes"
+                        style="flex:1; padding:12px; border:none; border-radius:12px; background:#ef4444; color:#fff; font-family:'Prompt',sans-serif; font-size:0.95rem; font-weight:600; cursor:pointer;">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toastBox"
+            style="display:none; position:fixed; bottom:28px; left:50%; transform:translateX(-50%); background:#1f2937; color:#fff; padding:14px 24px; border-radius:14px; z-index:10000; font-family:'Prompt',sans-serif; font-size:0.92rem; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.25); min-width:200px;">
+        </div>
+
+        <!-- Loading State -->
+        <div class="card" id="loadingCard" style="display: none;">
+            <div class="card-body loading">
+                <div class="spinner-border mb-3" role="status"></div>
+                <h4 style="color: #16a34a; font-weight: 600;">กำลังบันทึกการจอง...</h4>
+                <p class="text-muted">กรุณารอสักครู่ ระบบกำลังส่งข้อมูลของคุณ</p>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div class="card" id="successCard" style="display: none;">
+            <div class="card-body text-center" style="padding: 50px 20px;">
+                <div style="font-size: 4rem; color: #16a34a; margin-bottom: 20px;">✅</div>
+                <h3 style="color: #16a34a; font-weight: 600;">จองห้องสำเร็จ!</h3>
+                <p class="text-muted">
+                    ระบบได้บันทึกข้อมูลการจองห้องประชุมของคุณเรียบร้อยแล้ว<br>ระบบจะส่งข้อความยืนยันไปที่ LINE ของคุณ
+                </p>
+                <button type="button" class="btn-submit mt-4" style="width: auto; padding: 10px 30px;"
+                    onclick="document.getElementById('successCard').style.display='none'; showMyBookings();">ดูการจองของฉัน</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        let currentBookings = [];
+
+        function showMyBookings() {
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('myBookingsCard').style.display = 'block';
+            loadMyBookings();
+        }
+
+        function hideMyBookings() {
+            document.getElementById('myBookingsCard').style.display = 'none';
+            document.getElementById('formCard').style.display = 'block';
+        }
+
+        function loadMyBookings() {
+            const empId = document.getElementById('empId').value;
+
+            // ถ้ารหัสพนักงานยังไม่โหลด ให้แจ้งเตือนชัดเจน
+            if (!empId || empId === "-") {
+                document.getElementById('myBookingsLoading').style.display = 'none';
+                document.getElementById('myBookingsList').innerHTML = '<div class="text-center text-muted py-4">⚠️ ไม่พบรหัสพนักงาน<br><small style="color:#ef4444;">กรุณากลับไปรอให้ชื่อของคุณแสดงในหน้าแรกก่อนกดดูประวัติครับ</small></div>';
+                return;
+            }
+
+            document.getElementById('myBookingsLoading').style.display = 'block';
+            document.getElementById('myBookingsList').innerHTML = '';
+
+            google.script.run
+                .withSuccessHandler(function (bookings) {
+                    document.getElementById('myBookingsLoading').style.display = 'none';
+                    const list = document.getElementById('myBookingsList');
+
+                    if (bookings.length === 0) {
+                        list.innerHTML = '<div class="text-center text-muted py-4">คุณไม่มีคิวจองห้องประชุมในขณะนี้</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    bookings.forEach(b => {
+                        let statusBadge = (b.status === 'อนุมัติ')
+                            ? `<span class="badge bg-success float-end">✅ อนุมัติ</span>`
+                            : `<span class="badge bg-secondary float-end">${b.status}</span>`;
+
+                        html += `
+              <div class="border rounded p-3 mb-3 shadow-sm" style="border-color: #e5e7eb; position: relative;">
+                ${statusBadge}
+                <h5 class="mb-1 text-success" style="font-weight: 600; padding-right: 80px;">${b.roomName}</h5>
+                <p class="mb-1 text-muted" style="font-size: 0.9rem;"><strong>วันที่:</strong> ${b.useDate}</p>
+                <p class="mb-1 text-muted" style="font-size: 0.9rem;"><strong>เวลา:</strong> ${b.startTime} - ${b.endTime}</p>
+                <p class="mb-2 text-muted" style="font-size: 0.9rem;"><strong>หัวข้อ:</strong> ${b.topic}</p>
+                <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" style="border-radius: 10px;" onclick="cancelMyBooking(${b.rowIndex}, this)">❌ ยกเลิกคิวนี้</button>
+              </div>
+            `;
+                    });
+                    list.innerHTML = html;
+                })
+                .withFailureHandler(function (error) {
+                    document.getElementById('myBookingsLoading').style.display = 'none';
+                    document.getElementById('myBookingsList').innerHTML = '<div class="text-danger text-center">เกิดข้อผิดพลาด: ' + error.message + '</div>';
+                })
+                .getMyBookings(empId);
+        }
+
+        function showToast(msg, isError) {
+            const t = document.getElementById('toastBox');
+            t.textContent = msg;
+            t.style.background = isError ? '#dc2626' : '#16a34a';
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
+
+        function showConfirm(onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'flex';
+            document.getElementById('confirmYes').onclick = function () {
+                modal.style.display = 'none';
+                onConfirm();
+            };
+            document.getElementById('confirmNo').onclick = function () {
+                modal.style.display = 'none';
+            };
+        }
+
+        function cancelMyBooking(rowIndex, btnElem) {
+            showConfirm(function () {
+                btnElem.disabled = true;
+                btnElem.innerHTML = 'กำลังยกเลิก...';
+
+                google.script.run
+                    .withSuccessHandler(function (res) {
+                        showToast('✅ ยกเลิกการจองเรียบร้อยแล้ว', false);
+                        loadMyBookings();
+                    })
+                    .withFailureHandler(function (error) {
+                        showToast('❌ เกิดข้อผิดพลาด: ' + error.message, true);
+                        btnElem.disabled = false;
+                        btnElem.innerHTML = '❌ ยกเลิกคิวนี้';
+                    })
+                    .cancelRoomBooking(rowIndex);
+            });
+        }
+
+        function fetchBookings() {
+            const room = document.getElementById('roomName').value;
+            const date = document.getElementById('useDate').value;
+
+            if (!room || !date) return;
+
+            // Reset immediately so stale data from previous room doesn't cause false overlaps
+            currentBookings = [];
+
+            const dashboard = document.getElementById('dashboardSection');
+            const list = document.getElementById('bookingList');
+
+            dashboard.style.display = 'block';
+            list.innerHTML = '<div class="text-center text-muted">กำลังโหลดข้อมูล...</div>';
+
+            google.script.run
+                .withSuccessHandler(function (bookings, reqObj) {
+                    const currentRoom = document.getElementById('roomName').value;
+                    const currentDate = document.getElementById('useDate').value;
+                    if (reqObj.room === currentRoom && reqObj.date === currentDate) {
+                        currentBookings = bookings;
+                        checkOverlap();
+                    }
+                })
+                .withFailureHandler(function (error) {
+                    list.innerHTML = '<div class="text-danger">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
+                })
+                .withUserObject({ room: room, date: date })
+                .getRoomBookings(room, date);
+        }
+
+        function checkOverlap() {
+            const reqStart = document.getElementById('startTime').value;
+            const reqEnd = document.getElementById('endTime').value;
+            const btn = document.getElementById('submitBtn');
+            const list = document.getElementById('bookingList');
+
+            // If date/room is not selected yet, or no bookings fetched, we still want to show red if time is invalid.
+            if (reqStart && reqEnd && reqStart >= reqEnd) {
+                list.innerHTML = '<div class="text-danger" style="font-weight: 600;">❌ เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น</div>';
+                list.style.backgroundColor = '#fef2f2';
+                list.style.borderColor = '#fecaca';
+                list.style.color = '#991b1b';
+                btn.disabled = true;
+                return;
+            }
+
+            let hasOverlap = false;
+            let overlapMsg = "";
+
+            if (reqStart && reqEnd) {
+                for (let b of currentBookings) {
+                    if (reqStart < b.endTime && reqEnd > b.startTime) {
+                        hasOverlap = true;
+                        overlapMsg = `ซ้อนทับกับแผนก ${b.department} (${b.startTime}-${b.endTime})`;
+                        break;
+                    }
+                }
+            }
+
+            if (hasOverlap) {
+                list.innerHTML = `<div style="font-weight: 600;">❌ ไม่สามารถจองได้! <br>${overlapMsg}</div>`;
+                list.style.backgroundColor = '#fef2f2';
+                list.style.borderColor = '#fecaca';
+                list.style.color = '#dc2626';
+                btn.disabled = true;
+            } else {
+                if (currentBookings.length === 0) {
+                    list.innerHTML = '<div class="text-success text-center" style="font-weight:500;">✅ ว่างตลอดทั้งวัน สามารถจองได้เลยครับ</div>';
+                } else {
+                    let html = '';
+                    if (reqStart && reqEnd) {
+                        html += '<div class="text-success mb-2" style="font-weight:600;">✅ เวลาที่คุณเลือกสามารถจองได้</div>';
+                    }
+                    html += '<ul class="mb-0" style="padding-left: 20px;">';
+                    currentBookings.forEach(b => {
+                        html += `<li class="mb-1"><strong>${b.startTime} - ${b.endTime}</strong> : แผนก ${b.department}</li>`;
+                    });
+                    html += '</ul>';
+                    list.innerHTML = html;
+                }
+                list.style.backgroundColor = '#f0fdf4';
+                list.style.borderColor = '#bbf7d0';
+                list.style.color = '#166534';
+                btn.disabled = false;
+            }
+        }
+
+        // Initialize user data on load
+        window.onload = function () {
+            let uid = document.getElementById('userId').value;
+            if (uid) {
+                google.script.run
+                    .withSuccessHandler(function (emp) {
+                        if (emp) {
+                            document.getElementById('empName').value = emp.name || '';
+                            document.getElementById('empId').value = emp.empId || '';
+                            document.getElementById('position').value = emp.position || '';
+                            document.getElementById('department').value = emp.department || '';
+
+                            document.getElementById('displayEmpName').innerText = emp.name || '-';
+                            document.getElementById('displayEmpId').innerText = emp.empId || '-';
+                            document.getElementById('displayPosition').innerText = emp.position || '-';
+                            document.getElementById('displayDept').innerText = emp.department || '-';
+                        } else {
+                            alert('ไม่พบข้อมูลพนักงานในระบบ กรุณาตรวจสอบการลงทะเบียน');
+                        }
+                    })
+                    .withFailureHandler(function (error) {
+                        console.error(error);
+                        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message);
+                    })
+                    .getEmployeeData(uid);
+            } else {
+                alert('ไม่พบข้อมูลรหัสผู้ใช้ (UID) จาก LINE');
+            }
+        };
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'กำลังประมวลผล...';
+
+            const form = document.getElementById('roomForm');
+            const formData = new FormData(form);
+            const formObject = Object.fromEntries(formData.entries());
+
+            // We already do real-time validation via checkOverlap(), but do one final check here
+
+            let hasOverlap = false;
+            for (let b of currentBookings) {
+                if (formObject.startTime < b.endTime && formObject.endTime > b.startTime) {
+                    hasOverlap = true;
+                    break;
+                }
+            }
+            if (formObject.startTime >= formObject.endTime || hasOverlap) {
+                alert("❌ ข้อมูลเวลาไม่ถูกต้อง หรือมีการจองซ้อนทับกัน กรุณาตรวจสอบอีกครั้ง");
+                btn.disabled = false;
+                btn.innerHTML = 'ยืนยันการจองห้อง';
+                return;
+            }
+
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('loadingCard').style.display = 'block';
+
+            google.script.run
+                .withSuccessHandler(function () {
+                    document.getElementById('loadingCard').style.display = 'none';
+                    document.getElementById('successCard').style.display = 'block';
+                })
+                .withFailureHandler(function (error) {
+                    alert("เกิดข้อผิดพลาด: " + error.message);
+                    document.getElementById('loadingCard').style.display = 'none';
+                    document.getElementById('formCard').style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerHTML = 'ยืนยันการจองห้อง';
+                })
+                .processRoomForm(formObject);
+        }
+    </script>
+</body>
+
+</html>
