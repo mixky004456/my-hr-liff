@@ -426,12 +426,7 @@
                         text: 'ระบบได้รับเรื่องร้องเรียน / ข้อเสนอแนะของคุณเรียบร้อยแล้ว',
                         confirmButtonColor: '#16a34a'
                     }).then(() => {
-                        // พยายามปิดหน้าต่าง LIFF กลับไปที่แชท
-                        if (typeof liff !== 'undefined') {
-                            liff.closeWindow();
-                        } else {
-                            window.close();
-                        }
+                        location.reload();
                     });
                 } else {
                     Swal.fire('ข้อผิดพลาด', response.message, 'error');

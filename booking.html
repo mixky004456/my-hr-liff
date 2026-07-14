@@ -11,6 +11,7 @@
     <!-- เพิ่ม Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Prompt', sans-serif;
@@ -615,7 +616,14 @@
             .then(response => {
                 if(response.status === 'success') {
                     document.getElementById('loadingCard').style.display = 'none';
-                    document.getElementById('successCard').style.display = 'block';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'จองห้องประชุมสำเร็จ',
+                        text: 'ระบบได้บันทึกการจองห้องประชุมของคุณเรียบร้อยแล้ว',
+                        confirmButtonColor: '#16a34a'
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
                     throw new Error(response.message || "Unknown error");
                 }

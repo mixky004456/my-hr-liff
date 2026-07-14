@@ -849,30 +849,28 @@
             .then(res => res.json())
             .then(response => {
                 if(response.status === 'success') {
-                    document.body.innerHTML = `
-            <div class="container">
-              <div class="text-center py-5 fade-in">
-                <div style="font-size: 60px; color: #16a34a; margin-bottom: 20px;">✅</div>
-                <h3 style="color: #16a34a; font-weight: 600;">ส่งคำขอลางานเรียบร้อย</h3>
-                <p class="text-muted mt-3">ระบบได้บันทึกการลางานของคุณเรียบร้อยแล้ว<br>โควตาวันลาของคุณถูกหักออกจากระบบอัตโนมัติ</p>
-              </div>
-            </div>
-          `;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ส่งคำขอลางานสำเร็จ',
+                        text: 'ระบบได้บันทึกการลางานของคุณเรียบร้อยแล้ว และระบบจะรีโหลดใหม่เพื่ออัปเดตวันลา',
+                        confirmButtonColor: '#16a34a'
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
                     throw new Error(response.message || "Unknown error");
                 }
             })
             .catch(error => {
-                document.body.innerHTML = `
-            <div class="container">
-              <div class="text-center py-5 fade-in">
-                <div style="font-size: 60px; color: #ff4d4d; margin-bottom: 20px;">❌</div>
-                <h3 style="color: #ff4d4d; font-weight: 600;">เกิดข้อผิดพลาด</h3>
-                <p class="text-muted mt-3">ระบบพบปัญหาขัดข้อง กรุณาแคปหน้าจอนี้ส่งให้ผู้ดูแลระบบ:<br><br><strong style="color:red;">${error.message}</strong></p>
-                <button class="btn btn-secondary mt-4" onclick="location.reload()">ลองใหม่อีกครั้ง</button>
-              </div>
-            </div>
-          `;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: error.message,
+                    confirmButtonColor: '#ef4444'
+                }).then(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
             });
         }
     </script>
