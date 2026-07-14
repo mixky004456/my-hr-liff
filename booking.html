@@ -189,6 +189,13 @@
             </div>
             <div class="card-body">
 
+                <!-- Loading Section -->
+                <div id="loadingSection" class="text-center py-4">
+                    <div class="spinner-border text-primary" style="color: #16a34a !important;" role="status"></div>
+                    <p class="mt-2 text-muted">กำลังตรวจสอบข้อมูลพนักงาน...</p>
+                </div>
+
+                <div id="formSection" style="display: none;">
                 <form id="roomForm" onsubmit="handleFormSubmit(event)">
                     <!-- Hidden Fields for Submission -->
                     <input type="hidden" id="userId" name="userId" value="">
@@ -267,6 +274,7 @@
                     <button type="submit" class="btn-submit" id="submitBtn"><i class="bi bi-send-fill"></i>
                         ยืนยันการจองห้อง</button>
                 </form>
+                </div>
 
             </div>
         </div>
@@ -554,6 +562,7 @@
                 fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + uid)
                     .then(res => res.json())
                     .then(response => {
+                        document.getElementById('loadingSection').style.display = 'none';
                         if (response.status === 'success' && response.data) {
                             const emp = response.data;
                             document.getElementById('empName').value = emp.name || '';
@@ -565,16 +574,20 @@
                             document.getElementById('displayEmpId').innerText = emp.empId || '-';
                             document.getElementById('displayPosition').innerText = emp.position || '-';
                             document.getElementById('displayDept').innerText = emp.department || '-';
+
+                            document.getElementById('formSection').style.display = 'block';
                         } else {
-                            alert('ไม่พบข้อมูลพนักงานในระบบ กรุณาตรวจสอบการลงทะเบียน');
+                            document.getElementById('formSection').style.display = 'none';
+                            document.querySelector('#formCard .card-body').innerHTML += '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลพนักงาน</h4><p>คุณไม่มีสิทธิ์ใช้งานระบบนี้ หรือยังไม่ได้ลงทะเบียนผูกบัญชี</p></div>';
                         }
                     })
                     .catch(error => {
-                        console.error(error);
-                        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message);
+                        document.getElementById('loadingSection').style.display = 'none';
+                        document.querySelector('#formCard .card-body').innerHTML += '<div class="text-center text-danger mt-4"><h4>❌ เกิดข้อผิดพลาด</h4><p>' + error.message + '</p></div>';
                     });
             } else {
-                alert('ไม่พบข้อมูลรหัสผู้ใช้ (UID) จาก URL');
+                document.getElementById('loadingSection').style.display = 'none';
+                document.querySelector('#formCard .card-body').innerHTML += '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลผู้ใช้งาน</h4><p>กรุณาเข้าสู่ระบบผ่านลิงก์ในแชท LINE อีกครั้ง</p></div>';
             }
         };
 
