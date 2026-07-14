@@ -15,7 +15,6 @@
 
     <script>
         const MY_LIFF_ID = "2010429320-3JYooRcB"; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbz6OHNmkE_LeZ9KUI_L5p6ch44RU4OfXij9YCRa7MYwvnZ1hOT_enUcSDt0HGvE2RMe/exec";
 
         async function main() {
             await liff.init({ liffId: MY_LIFF_ID });
@@ -28,8 +27,8 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const target = urlParams.get('target') || 'leave'; // ถ้าไม่ระบุ ให้ไปหน้า leave
                 
-                // ส่งต่อไปยัง Google Apps Script โดยใช้ค่า target ที่ดึงมาได้
-                window.location.href = GAS_URL + "?page=" + target + "&uid=" + uid;
+                // ส่งต่อไปยังไฟล์ HTML ภายในโปรเจกต์เดียวกันบน GitHub Pages
+                window.location.href = target + ".html?uid=" + uid;
             } else {
                 liff.login();
             }

@@ -11,6 +11,7 @@
     <!-- เพิ่ม Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.js"></script>
     <style>
         body {
             font-family: 'Prompt', sans-serif;
@@ -312,8 +313,8 @@
                     </div>
 
                     <form id="leaveForm" onsubmit="handleFormSubmit(event)">
-                        <!-- 🔥 จุดสำคัญ: ใช้ <?= uid ?> เพื่อรับค่าจาก Google Apps Script โดยตรง -->
-                        <input type="hidden" id="userId" name="userId" value="<?= uid ?>">
+                        <!-- รับค่า UID จาก URL (จากหน้าที่แล้ว) -->
+                        <input type="hidden" id="userId" name="userId" value="">
                         <input type="hidden" id="empName" name="empName" value="">
                         <input type="hidden" id="empId" name="empId" value="">
                         <input type="hidden" id="department" name="department" value="">
@@ -448,6 +449,15 @@
 
         // 🔥 ปรับระบบโหลดหน้าใหม่ ไม่ต้องง้อ LIFF แล้ว!
         window.onload = function () {
+            // ดึง UID จาก URL (e.g. leave.html?uid=U12345...)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUid = urlParams.get('uid');
+            
+            // นำไปใส่ในฟอร์ม
+            if (urlUid) {
+                document.getElementById('userId').value = urlUid;
+            }
+            
             const userId = document.getElementById('userId').value;
 
             // ถ้ามี UID ส่งมาจากหน้า GitHub ให้โหลดข้อมูลพนักงานได้เลย
@@ -461,13 +471,16 @@
         };
 
         function loadEmployeeData(userId) {
-            google.script.run
-                .withSuccessHandler(function (emp) {
+            fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + userId)
+                .then(res => res.json())
+                .then(response => {
                     document.getElementById('loadingSection').style.display = 'none';
-                    if (!emp) {
+                    if (response.status !== 'success' || !response.data) {
                         document.querySelector('.card-body').innerHTML = '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลพนักงาน</h4><p>คุณไม่มีสิทธิ์ใช้งานระบบนี้ หรือยังไม่ได้ลงทะเบียนผูกบัญชี</p></div>';
                         return;
                     }
+                    
+                    const emp = response.data;
 
                     document.getElementById('formSection').style.display = 'block';
                     document.getElementById('displayEmpName').innerText = emp.name;
@@ -829,8 +842,13 @@
         }
 
         function submitDataToBackend(data, submitBtn, originalText) {
-            google.script.run
-                .withSuccessHandler(function (response) {
+            fetch(GAS_API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "processLeaveForm", data: data })
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.status === 'success') {
                     document.body.innerHTML = `
             <div class="container">
               <div class="text-center py-5 fade-in">
@@ -840,9 +858,12 @@
               </div>
             </div>
           `;
-                })
-                .withFailureHandler(function (error) {
-                    document.body.innerHTML = `
+                } else {
+                    throw new Error(response.message || "Unknown error");
+                }
+            })
+            .catch(error => {
+                document.body.innerHTML = `
             <div class="container">
               <div class="text-center py-5 fade-in">
                 <div style="font-size: 60px; color: #ff4d4d; margin-bottom: 20px;">❌</div>
@@ -852,8 +873,7 @@
               </div>
             </div>
           `;
-                })
-                .processLeaveForm(data);
+            });
         }
     </script>
 </body>

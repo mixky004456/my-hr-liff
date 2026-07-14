@@ -11,6 +11,7 @@
     <!-- เพิ่ม Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.js"></script>
 
     <style>
         body {
@@ -289,10 +290,12 @@
     </div>
 
     <script>
-        const UID_FROM_LINE = "<?= uid ?>";
         let empDataCache = null;
 
         window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const UID_FROM_LINE = urlParams.get('uid');
+
             if (!UID_FROM_LINE) {
                 document.getElementById('loadingSection').style.display = 'none';
                 document.querySelector('.card-body').innerHTML = '<div class="text-center text-danger mt-5"><h4><i class="bi bi-x-circle-fill"></i> ข้อผิดพลาด</h4><p>ไม่พบรหัสผู้ใช้งาน กรุณาเข้าผ่านปุ่มใน LINE</p></div>';
@@ -301,23 +304,24 @@
 
             document.getElementById('userId').value = UID_FROM_LINE;
 
-            // ดึงข้อมูลพนักงานจาก รหัส.gs
-            google.script.run
-                .withSuccessHandler(function (emp) {
+            // ดึงข้อมูลพนักงานจาก API
+            fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + UID_FROM_LINE)
+                .then(res => res.json())
+                .then(response => {
                     document.getElementById('loadingSection').style.display = 'none';
-                    if (!emp) {
+                    if (response.status !== 'success' || !response.data) {
                         document.querySelector('.card-body').innerHTML = '<div class="text-center text-danger mt-5"><h4><i class="bi bi-shield-x"></i> ไม่พบสิทธิ์</h4><p>ระบบไม่พบข้อมูลพนักงานของคุณ</p></div>';
                         return;
                     }
 
+                    const emp = response.data;
                     empDataCache = emp;
                     document.getElementById('formSection').style.display = 'block';
                     fillEmpData(emp);
                 })
-                .withFailureHandler(function (error) {
+                .catch(error => {
                     Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message, 'error');
-                })
-                .getEmployeeData(UID_FROM_LINE);
+                });
         };
 
         function fillEmpData(emp) {
@@ -409,34 +413,37 @@
                 certName: document.getElementById('certName').value
             };
 
-            google.script.run
-                .withSuccessHandler(function (res) {
-                    if (res === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'บันทึกข้อมูลสำเร็จ',
-                            text: 'ระบบได้รับเรื่องร้องเรียน / ข้อเสนอแนะของคุณเรียบร้อยแล้ว',
-                            confirmButtonColor: '#16a34a'
-                        }).then(() => {
-                            // พยายามปิดหน้าต่าง LIFF กลับไปที่แชท
-                            if (typeof liff !== 'undefined') {
-                                liff.closeWindow();
-                            } else {
-                                window.close();
-                            }
-                        });
-                    } else {
-                        Swal.fire('ข้อผิดพลาด', res, 'error');
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-send-fill"></i> ส่งข้อมูลเข้าสู่ระบบ';
-                    }
-                })
-                .withFailureHandler(function (err) {
-                    Swal.fire('ข้อผิดพลาด', err.message, 'error');
+            fetch(GAS_API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "processGrievanceForm", data: formData })
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'บันทึกข้อมูลสำเร็จ',
+                        text: 'ระบบได้รับเรื่องร้องเรียน / ข้อเสนอแนะของคุณเรียบร้อยแล้ว',
+                        confirmButtonColor: '#16a34a'
+                    }).then(() => {
+                        // พยายามปิดหน้าต่าง LIFF กลับไปที่แชท
+                        if (typeof liff !== 'undefined') {
+                            liff.closeWindow();
+                        } else {
+                            window.close();
+                        }
+                    });
+                } else {
+                    Swal.fire('ข้อผิดพลาด', response.message, 'error');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-send-fill"></i> ส่งข้อมูลเข้าสู่ระบบ';
-                })
-                .processGrievanceForm(formData);
+                }
+            })
+            .catch(error => {
+                Swal.fire('ข้อผิดพลาด', error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send-fill"></i> ส่งข้อมูลเข้าสู่ระบบ';
+            });
         }
 
         // ระบบบีบอัดภาพก่อนส่ง

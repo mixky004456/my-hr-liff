@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- เพิ่ม Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="config.js"></script>
     <style>
         body {
             font-family: 'Prompt', sans-serif;
@@ -189,7 +190,7 @@
 
                 <form id="roomForm" onsubmit="handleFormSubmit(event)">
                     <!-- Hidden Fields for Submission -->
-                    <input type="hidden" id="userId" name="userId" value="<?= uid ?>">
+                    <input type="hidden" id="userId" name="userId" value="">
                     <input type="hidden" id="empName" name="empName" value="">
                     <input type="hidden" id="empId" name="empId" value="">
                     <input type="hidden" id="position" name="position" value="">
@@ -359,9 +360,13 @@
             document.getElementById('myBookingsLoading').style.display = 'block';
             document.getElementById('myBookingsList').innerHTML = '';
 
-            google.script.run
-                .withSuccessHandler(function (bookings) {
+            fetch(GAS_API_URL + "?action=getMyBookings&uid=" + empId)
+                .then(res => res.json())
+                .then(response => {
                     document.getElementById('myBookingsLoading').style.display = 'none';
+                    if (response.status !== 'success') throw new Error(response.message || "Unknown Error");
+                    
+                    const bookings = response.data || [];
                     const list = document.getElementById('myBookingsList');
 
                     if (bookings.length === 0) {
@@ -388,11 +393,10 @@
                     });
                     list.innerHTML = html;
                 })
-                .withFailureHandler(function (error) {
+                .catch(error => {
                     document.getElementById('myBookingsLoading').style.display = 'none';
                     document.getElementById('myBookingsList').innerHTML = '<div class="text-danger text-center">เกิดข้อผิดพลาด: ' + error.message + '</div>';
-                })
-                .getMyBookings(empId);
+                });
         }
 
         function showToast(msg, isError) {
@@ -420,17 +424,24 @@
                 btnElem.disabled = true;
                 btnElem.innerHTML = 'กำลังยกเลิก...';
 
-                google.script.run
-                    .withSuccessHandler(function (res) {
+                fetch(GAS_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "cancelRoomBooking", data: { rowIndex: rowIndex } })
+                })
+                .then(res => res.json())
+                .then(response => {
+                    if (response.status === 'success') {
                         showToast('✅ ยกเลิกการจองเรียบร้อยแล้ว', false);
                         loadMyBookings();
-                    })
-                    .withFailureHandler(function (error) {
-                        showToast('❌ เกิดข้อผิดพลาด: ' + error.message, true);
-                        btnElem.disabled = false;
-                        btnElem.innerHTML = '❌ ยกเลิกคิวนี้';
-                    })
-                    .cancelRoomBooking(rowIndex);
+                    } else {
+                        throw new Error(response.message);
+                    }
+                })
+                .catch(error => {
+                    showToast('❌ เกิดข้อผิดพลาด: ' + error.message, true);
+                    btnElem.disabled = false;
+                    btnElem.innerHTML = '❌ ยกเลิกคิวนี้';
+                });
             });
         }
 
@@ -449,20 +460,21 @@
             dashboard.style.display = 'block';
             list.innerHTML = '<div class="text-center text-muted">กำลังโหลดข้อมูล...</div>';
 
-            google.script.run
-                .withSuccessHandler(function (bookings, reqObj) {
+            fetch(GAS_API_URL + "?action=getRoomBookings&room=" + encodeURIComponent(room) + "&date=" + encodeURIComponent(date))
+                .then(res => res.json())
+                .then(response => {
+                    if(response.status !== 'success') throw new Error(response.message);
                     const currentRoom = document.getElementById('roomName').value;
                     const currentDate = document.getElementById('useDate').value;
-                    if (reqObj.room === currentRoom && reqObj.date === currentDate) {
-                        currentBookings = bookings;
+                    // If the user hasn't changed the inputs while we were fetching
+                    if (room === currentRoom && date === currentDate) {
+                        currentBookings = response.data || [];
                         checkOverlap();
                     }
                 })
-                .withFailureHandler(function (error) {
-                    list.innerHTML = '<div class="text-danger">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
-                })
-                .withUserObject({ room: room, date: date })
-                .getRoomBookings(room, date);
+                .catch(error => {
+                    list.innerHTML = '<div class="text-danger">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</div>';
+                });
         }
 
         function checkOverlap() {
@@ -524,11 +536,19 @@
 
         // Initialize user data on load
         window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUid = urlParams.get('uid');
+            if (urlUid) {
+                document.getElementById('userId').value = urlUid;
+            }
+            
             let uid = document.getElementById('userId').value;
             if (uid) {
-                google.script.run
-                    .withSuccessHandler(function (emp) {
-                        if (emp) {
+                fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + uid)
+                    .then(res => res.json())
+                    .then(response => {
+                        if (response.status === 'success' && response.data) {
+                            const emp = response.data;
                             document.getElementById('empName').value = emp.name || '';
                             document.getElementById('empId').value = emp.empId || '';
                             document.getElementById('position').value = emp.position || '';
@@ -542,13 +562,12 @@
                             alert('ไม่พบข้อมูลพนักงานในระบบ กรุณาตรวจสอบการลงทะเบียน');
                         }
                     })
-                    .withFailureHandler(function (error) {
+                    .catch(error => {
                         console.error(error);
                         alert('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message);
-                    })
-                    .getEmployeeData(uid);
+                    });
             } else {
-                alert('ไม่พบข้อมูลรหัสผู้ใช้ (UID) จาก LINE');
+                alert('ไม่พบข้อมูลรหัสผู้ใช้ (UID) จาก URL');
             }
         };
 
@@ -582,19 +601,26 @@
             document.getElementById('formCard').style.display = 'none';
             document.getElementById('loadingCard').style.display = 'block';
 
-            google.script.run
-                .withSuccessHandler(function () {
+            fetch(GAS_API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "processRoomForm", data: formObject })
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.status === 'success') {
                     document.getElementById('loadingCard').style.display = 'none';
                     document.getElementById('successCard').style.display = 'block';
-                })
-                .withFailureHandler(function (error) {
-                    alert("เกิดข้อผิดพลาด: " + error.message);
-                    document.getElementById('loadingCard').style.display = 'none';
-                    document.getElementById('formCard').style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerHTML = 'ยืนยันการจองห้อง';
-                })
-                .processRoomForm(formObject);
+                } else {
+                    throw new Error(response.message || "Unknown error");
+                }
+            })
+            .catch(error => {
+                alert("เกิดข้อผิดพลาด: " + error.message);
+                document.getElementById('loadingCard').style.display = 'none';
+                document.getElementById('formCard').style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = 'ยืนยันการจองห้อง';
+            });
         }
     </script>
 </body>
