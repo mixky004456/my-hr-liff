@@ -76,9 +76,9 @@
         .course-card {
             border: 1px solid #e2e8f0;
             border-radius: 14px;
-            padding: 15px;
             margin-bottom: 15px;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .course-card:hover {
@@ -86,17 +86,77 @@
             background-color: #f0fdf4;
         }
 
+        .course-card-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .course-card-body {
+            padding: 15px;
+        }
+
         .course-title {
             font-weight: 600;
             color: #1e293b;
             font-size: 1.05rem;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .course-detail {
             font-size: 0.85rem;
             color: #64748b;
             margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        .course-detail i {
+            color: #16a34a;
+            width: 18px;
+            text-align: center;
+            margin-right: 4px;
+        }
+
+        .instructor-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .instructor-badge.internal {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .instructor-badge.external {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.open {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-badge.closed {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-badge.upcoming {
+            background-color: #e0f2fe;
+            color: #0284c7;
         }
 
         .btn-register {
@@ -113,6 +173,25 @@
         .btn-register.available {
             background-color: #16a34a;
             color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Loading spinner for courses */
+        .courses-loading {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -166,51 +245,25 @@
                     <!-- เนื้อหาของแต่ละเมนู -->
                     <div class="tab-content" id="trainingTabsContent">
 
-                        <!-- 1. หน้า อบรมของบริษัท -->
+                        <!-- 1. หน้า อบรมของบริษัท (ภายใน) -->
                         <div class="tab-pane fade show active" id="internal" role="tabpanel">
                             <h6 class="text-success mb-3" style="font-weight: 600;">หลักสูตรภายในบริษัท</h6>
-
-                            <div class="course-card">
-                                <div class="course-title">การดับเพลิงขั้นต้น และอพยพหนีไฟ ประจำปี</div>
-                                <div class="course-detail">
-                                    <i class="bi bi-calendar-event"></i> วันที่: 20 ก.ค. 2026<br>
-                                    <i class="bi bi-geo-alt"></i> สถานที่: ลานจอดรถหน้าโรงงาน
-                                </div>
-                                <button class="btn btn-register available"><i class="bi bi-check-circle"></i>
-                                    ลงทะเบียนเข้าร่วม</button>
-                            </div>
-
-                            <!-- กล่องคอร์สที่มีรูปภาพประกอบ -->
-                            <div class="course-card" style="padding: 0; overflow: hidden;">
-                                <!-- 1. ใส่ลิงก์รูปภาพตรง src="..." -->
-                                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80"
-                                    alt="Cover Image" style="width: 100%; height: 140px; object-fit: cover;">
-
-                                <!-- 2. ส่วนเนื้อหาที่อยู่ใต้รูป -->
-                                <div style="padding: 15px;">
-                                    <div class="course-title">อบรมการใช้ระบบ ERP เบื้องต้น</div>
-                                    <div class="course-detail">
-                                        <i class="bi bi-calendar-event"></i> วันที่: 25 ก.ค. 2026<br>
-                                        <i class="bi bi-geo-alt"></i> สถานที่: ห้องประชุมชั้น 4
-                                    </div>
-                                    <button class="btn btn-register available"><i class="bi bi-check-circle"></i>
-                                        ลงทะเบียนเข้าร่วม</button>
+                            <div id="internalCoursesList">
+                                <div class="courses-loading">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                    <p class="mt-2 mb-0" style="font-size: 0.85rem;">กำลังโหลดหลักสูตร...</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 2. หน้า ประกาศอบรม -->
+                        <!-- 2. หน้า ประกาศอบรมภายนอก -->
                         <div class="tab-pane fade" id="announce" role="tabpanel">
                             <h6 class="text-success mb-3" style="font-weight: 600;">ประกาศอบรมภายนอก / ข่าวสาร</h6>
-
-                            <div class="course-card" style="border-left: 4px solid #f59e0b;">
-                                <div class="course-title">หลักสูตร จป. หัวหน้างาน (สมาคมความปลอดภัยฯ)</div>
-                                <div class="course-detail">
-                                    เปิดรับสมัครผู้ที่สนใจเข้ารับการอบรม จป. หัวหน้างาน รอบเดือนสิงหาคม
-                                    ติดต่อขออนุมัติได้ที่ฝ่าย HR ด่วน!
+                            <div id="externalCoursesList">
+                                <div class="courses-loading">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                    <p class="mt-2 mb-0" style="font-size: 0.85rem;">กำลังโหลดหลักสูตร...</p>
                                 </div>
-                                <button class="btn btn-register"
-                                    style="background-color: #fef3c7; color: #d97706;">อ่านรายละเอียดเพิ่มเติม</button>
                             </div>
                         </div>
 
@@ -219,21 +272,25 @@
                             <h6 class="text-success mb-3" style="font-weight: 600;">ประวัติการผ่านการอบรมของคุณ</h6>
 
                             <div class="course-card" style="background-color: #f8fafc;">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge bg-success">ผ่านการอบรม</span>
-                                    <small class="text-muted">15 มิ.ย. 2026</small>
+                                <div class="course-card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-success">ผ่านการอบรม</span>
+                                        <small class="text-muted">15 มิ.ย. 2026</small>
+                                    </div>
+                                    <div class="course-title" style="font-size: 0.95rem;">ปฐมนิเทศพนักงานใหม่ (New Hire
+                                        Orientation)</div>
                                 </div>
-                                <div class="course-title" style="font-size: 0.95rem;">ปฐมนิเทศพนักงานใหม่ (New Hire
-                                    Orientation)</div>
                             </div>
 
                             <div class="course-card" style="background-color: #f8fafc;">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge bg-success">ผ่านการอบรม</span>
-                                    <small class="text-muted">05 พ.ค. 2026</small>
+                                <div class="course-card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-success">ผ่านการอบรม</span>
+                                        <small class="text-muted">05 พ.ค. 2026</small>
+                                    </div>
+                                    <div class="course-title" style="font-size: 0.95rem;">ความปลอดภัยในการทำงานเบื้องต้น
+                                        (Safety First)</div>
                                 </div>
-                                <div class="course-title" style="font-size: 0.95rem;">ความปลอดภัยในการทำงานเบื้องต้น
-                                    (Safety First)</div>
                             </div>
                         </div>
 
@@ -246,6 +303,113 @@
 
     <script>
         let currentUser = null;
+
+        // ฟังก์ชันสร้างการ์ดหลักสูตร
+        function buildCourseCard(course) {
+            let card = document.createElement('div');
+            card.className = 'course-card';
+
+            let html = '';
+
+            // รูปภาพ (ถ้ามี)
+            if (course.imageUrl) {
+                html += `<img src="${course.imageUrl}" alt="${course.courseName}" class="course-card-img" onerror="this.style.display='none'">`;
+            }
+
+            // ป้ายสถานะ
+            let statusClass = 'open';
+            let statusIcon = 'bi-check-circle';
+            if (course.status === 'ปิดรับสมัคร') {
+                statusClass = 'closed';
+                statusIcon = 'bi-x-circle';
+            } else if (course.status === 'เร็วๆ นี้') {
+                statusClass = 'upcoming';
+                statusIcon = 'bi-clock';
+            }
+
+            // ป้ายวิทยากร
+            let instructorTypeClass = course.type === 'ภายนอก' ? 'external' : 'internal';
+            let instructorTypeLabel = course.type === 'ภายนอก' ? 'วิทยากรภายนอก' : 'วิทยากรภายใน';
+
+            html += `<div class="course-card-body">`;
+            html += `<div class="d-flex justify-content-between align-items-start mb-1">`;
+            html += `<div class="course-title" style="flex:1;">${course.courseName}</div>`;
+            html += `</div>`;
+
+            html += `<div class="mb-2">`;
+            html += `<span class="instructor-badge ${instructorTypeClass}"><i class="bi bi-person-badge"></i> ${instructorTypeLabel}</span> `;
+            html += `<span class="status-badge ${statusClass}"><i class="bi ${statusIcon}"></i> ${course.status}</span>`;
+            html += `</div>`;
+
+            html += `<div class="course-detail">`;
+            html += `<i class="bi bi-calendar-event"></i> วันที่: ${course.date}<br>`;
+            if (course.duration) {
+                html += `<i class="bi bi-hourglass-split"></i> เวลาที่ใช้อบรม: ${course.duration}<br>`;
+            }
+            html += `<i class="bi bi-geo-alt"></i> สถานที่: ${course.location}<br>`;
+            html += `</div>`;
+
+            // ปุ่ม
+            if (course.status === 'เปิดรับสมัคร') {
+                html += `<button class="btn btn-register available"><i class="bi bi-check-circle"></i> ลงทะเบียนเข้าร่วม</button>`;
+            } else if (course.status === 'ปิดรับสมัคร') {
+                html += `<button class="btn btn-register" disabled><i class="bi bi-x-circle"></i> ปิดรับสมัครแล้ว</button>`;
+            } else {
+                html += `<button class="btn btn-register" style="background-color: #e0f2fe; color: #0284c7;"><i class="bi bi-clock"></i> ${course.status}</button>`;
+            }
+
+            html += `</div>`;
+
+            card.innerHTML = html;
+            return card;
+        }
+
+        // ฟังก์ชันโหลดหลักสูตรจาก API
+        function loadTrainingCourses() {
+            fetch(GAS_API_URL + "?action=getTrainingCourses")
+                .then(res => res.json())
+                .then(response => {
+                    if (response.status === 'success' && response.data) {
+                        let courses = response.data;
+
+                        let internalList = document.getElementById('internalCoursesList');
+                        let externalList = document.getElementById('externalCoursesList');
+
+                        internalList.innerHTML = '';
+                        externalList.innerHTML = '';
+
+                        let internalCount = 0;
+                        let externalCount = 0;
+
+                        courses.forEach(course => {
+                            let card = buildCourseCard(course);
+                            if (course.type === 'ภายนอก') {
+                                externalList.appendChild(card);
+                                externalCount++;
+                            } else {
+                                internalList.appendChild(card);
+                                internalCount++;
+                            }
+                        });
+
+                        // แสดงข้อความว่างถ้าไม่มีคอร์ส
+                        if (internalCount === 0) {
+                            internalList.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i><p>ยังไม่มีหลักสูตรภายในในขณะนี้</p></div>';
+                        }
+                        if (externalCount === 0) {
+                            externalList.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i><p>ยังไม่มีหลักสูตรภายนอกในขณะนี้</p></div>';
+                        }
+                    } else {
+                        document.getElementById('internalCoursesList').innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>ไม่สามารถโหลดข้อมูลหลักสูตรได้</p></div>';
+                        document.getElementById('externalCoursesList').innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>ไม่สามารถโหลดข้อมูลหลักสูตรได้</p></div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading courses:', error);
+                    document.getElementById('internalCoursesList').innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p></div>';
+                    document.getElementById('externalCoursesList').innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p></div>';
+                });
+        }
 
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
@@ -276,6 +440,9 @@
                     currentUser = emp;
                     document.getElementById('welcomeName').innerText = emp.name;
                     document.getElementById('mainContent').style.display = 'block';
+
+                    // โหลดหลักสูตรอบรมจาก Google Sheet
+                    loadTrainingCourses();
                 })
                 .catch(error => {
                     document.getElementById('loadingSection').style.display = 'none';
