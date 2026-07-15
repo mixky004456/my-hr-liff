@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="config.js"></script>
 
     <style>
@@ -193,6 +194,26 @@
             padding: 30px;
             color: #94a3b8;
         }
+
+        /* ประวัติการอบรม - สรุปชั่วโมง */
+        .summary-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .summary-box .hours {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #16a34a;
+        }
+
+        .summary-box .label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -237,7 +258,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history"
                                 type="button" role="tab">
-                                <i class="bi bi-clock-history"></i> ประวัติ
+                                <i class="bi bi-clock-history"></i> ประวัติการอบรม
                             </button>
                         </li>
                     </ul>
@@ -267,29 +288,13 @@
                             </div>
                         </div>
 
-                        <!-- 3. หน้า ประวัติการอบรม -->
+                        <!-- 3. หน้า ประวัติการอบรม (ดึงจาก API) -->
                         <div class="tab-pane fade" id="history" role="tabpanel">
                             <h6 class="text-success mb-3" style="font-weight: 600;">ประวัติการผ่านการอบรมของคุณ</h6>
-
-                            <div class="course-card" style="background-color: #f8fafc;">
-                                <div class="course-card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge bg-success">ผ่านการอบรม</span>
-                                        <small class="text-muted">15 มิ.ย. 2026</small>
-                                    </div>
-                                    <div class="course-title" style="font-size: 0.95rem;">ปฐมนิเทศพนักงานใหม่ (New Hire
-                                        Orientation)</div>
-                                </div>
-                            </div>
-
-                            <div class="course-card" style="background-color: #f8fafc;">
-                                <div class="course-card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge bg-success">ผ่านการอบรม</span>
-                                        <small class="text-muted">05 พ.ค. 2026</small>
-                                    </div>
-                                    <div class="course-title" style="font-size: 0.95rem;">ความปลอดภัยในการทำงานเบื้องต้น
-                                        (Safety First)</div>
+                            <div id="historyList">
+                                <div class="courses-loading">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                    <p class="mt-2 mb-0" style="font-size: 0.85rem;">กำลังโหลดประวัติ...</p>
                                 </div>
                             </div>
                         </div>
@@ -304,7 +309,7 @@
     <script>
         let currentUser = null;
 
-        // ฟังก์ชันสร้างการ์ดหลักสูตร
+        // ฟังก์ชันสร้างการ์ดหลักสูตร (สำหรับแท็บ อบรมประจำปี และ หลักสูตรที่สนใจ)
         function buildCourseCard(course) {
             let card = document.createElement('div');
             card.className = 'course-card';
@@ -351,7 +356,7 @@
 
             // ปุ่ม
             if (course.status === 'เปิดรับสมัคร') {
-                html += `<button class="btn btn-register available"><i class="bi bi-check-circle"></i> ลงทะเบียนเข้าร่วม</button>`;
+                html += `<button class="btn btn-register available" onclick="registerCourse('${course.courseName.replace(/'/g, "\\'")}', '${course.date}', '${course.duration}')"><i class="bi bi-check-circle"></i> ลงทะเบียนเข้าร่วม</button>`;
             } else if (course.status === 'ปิดรับสมัคร') {
                 html += `<button class="btn btn-register" disabled><i class="bi bi-x-circle"></i> ปิดรับสมัครแล้ว</button>`;
             } else {
@@ -362,6 +367,75 @@
 
             card.innerHTML = html;
             return card;
+        }
+
+        // ฟังก์ชันลงทะเบียนอบรม
+        function registerCourse(courseName, courseDate, duration) {
+            if (!currentUser) return;
+
+            Swal.fire({
+                title: 'ยืนยันการลงทะเบียน?',
+                html: `<div style="text-align:left; font-size:0.9rem; line-height:1.8;">
+                    <b>หลักสูตร:</b> ${courseName}<br>
+                    <b>วันที่:</b> ${courseDate}<br>
+                    <b>ระยะเวลา:</b> ${duration || '-'}<br>
+                    <b>ผู้ลงทะเบียน:</b> ${currentUser.name}
+                </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: '<i class="bi bi-check-circle"></i> ยืนยันลงทะเบียน',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                    fetch(GAS_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'processTrainingReg',
+                            data: {
+                                empName: currentUser.name,
+                                empId: currentUser.empId,
+                                department: currentUser.department,
+                                courseName: courseName,
+                                courseDate: courseDate,
+                                duration: duration
+                            }
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(response => {
+                        if (response.status === 'success') {
+                            if (response.message === 'already_registered') {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'ลงทะเบียนแล้ว',
+                                    text: 'คุณเคยลงทะเบียนหลักสูตรนี้แล้วครับ',
+                                    confirmButtonColor: '#16a34a'
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'ลงทะเบียนสำเร็จ!',
+                                    text: `ระบบบันทึกการลงทะเบียนหลักสูตร "${courseName}" เรียบร้อยแล้วครับ`,
+                                    confirmButtonColor: '#16a34a'
+                                });
+                                // รีโหลดประวัติ
+                                loadTrainingHistory();
+                            }
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: response.message, confirmButtonColor: '#16a34a' });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: err.message, confirmButtonColor: '#16a34a' });
+                    });
+                }
+            });
         }
 
         // ฟังก์ชันโหลดหลักสูตรจาก API
@@ -411,6 +485,83 @@
                 });
         }
 
+        // ฟังก์ชันโหลดประวัติการอบรมจาก API
+        function loadTrainingHistory() {
+            if (!currentUser) return;
+
+            let historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="courses-loading"><div class="spinner-border spinner-border-sm text-success" role="status"></div><p class="mt-2 mb-0" style="font-size: 0.85rem;">กำลังโหลดประวัติ...</p></div>';
+
+            fetch(GAS_API_URL + "?action=getMyTrainingHistory&empId=" + encodeURIComponent(currentUser.empId))
+                .then(res => res.json())
+                .then(response => {
+                    if (response.status === 'success' && response.data) {
+                        let records = response.data;
+                        historyList.innerHTML = '';
+
+                        if (records.length === 0) {
+                            historyList.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i><p>ยังไม่มีประวัติการอบรม</p></div>';
+                            return;
+                        }
+
+                        // สรุปจำนวนชั่วโมงรวม (เฉพาะที่ผ่านการอบรม)
+                        let totalHours = 0;
+                        let passedCount = 0;
+                        records.forEach(r => {
+                            if (r.status === 'ผ่านการอบรม') {
+                                totalHours += parseFloat(r.duration) || 0;
+                                passedCount++;
+                            }
+                        });
+
+                        // แสดงกล่องสรุป
+                        let summaryHtml = `<div class="summary-box">
+                            <div class="hours">${totalHours} <span style="font-size:1rem;">ชั่วโมง</span></div>
+                            <div class="label">ชั่วโมงอบรมสะสม (ผ่านแล้ว ${passedCount} หลักสูตร)</div>
+                        </div>`;
+                        historyList.innerHTML = summaryHtml;
+
+                        // แสดงรายการประวัติ
+                        records.forEach(record => {
+                            let statusBadge = '';
+                            let bgColor = '#f8fafc';
+
+                            if (record.status === 'ผ่านการอบรม') {
+                                statusBadge = '<span class="badge bg-success">ผ่านการอบรม</span>';
+                            } else if (record.status === 'รอเข้าอบรม') {
+                                statusBadge = '<span class="badge bg-warning text-dark">รอเข้าอบรม</span>';
+                                bgColor = '#fffbeb';
+                            } else if (record.status === 'ขาดอบรม') {
+                                statusBadge = '<span class="badge bg-danger">ขาดอบรม</span>';
+                                bgColor = '#fef2f2';
+                            } else {
+                                statusBadge = `<span class="badge bg-secondary">${record.status}</span>`;
+                            }
+
+                            let cardHtml = `<div class="course-card" style="background-color: ${bgColor};">
+                                <div class="course-card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        ${statusBadge}
+                                        <small class="text-muted">${record.date}</small>
+                                    </div>
+                                    <div class="course-title" style="font-size: 0.95rem;">${record.courseName}</div>
+                                    ${record.duration ? `<div style="font-size:0.8rem; color:#64748b;"><i class="bi bi-hourglass-split"></i> ${record.duration} ชั่วโมง</div>` : ''}
+                                </div>
+                            </div>`;
+
+                            historyList.innerHTML += cardHtml;
+                        });
+
+                    } else {
+                        historyList.innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>ไม่สามารถโหลดประวัติได้</p></div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading history:', error);
+                    historyList.innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><p>เกิดข้อผิดพลาดในการโหลดประวัติ</p></div>';
+                });
+        }
+
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
             const UID_FROM_LINE = urlParams.get('uid');
@@ -443,6 +594,9 @@
 
                     // โหลดหลักสูตรอบรมจาก Google Sheet
                     loadTrainingCourses();
+
+                    // โหลดประวัติการอบรมจาก Google Sheet
+                    loadTrainingHistory();
                 })
                 .catch(error => {
                     document.getElementById('loadingSection').style.display = 'none';
