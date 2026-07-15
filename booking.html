@@ -577,8 +577,7 @@
 
                             document.getElementById('formSection').style.display = 'block';
                         } else {
-                            document.getElementById('formSection').style.display = 'none';
-                            document.querySelector('#formCard .card-body').innerHTML += '<div class="text-center text-danger mt-4"><h4>❌ ไม่พบข้อมูลพนักงาน</h4><p>คุณไม่มีสิทธิ์ใช้งานระบบนี้ หรือยังไม่ได้ลงทะเบียนผูกบัญชี</p></div>';
+                            window.location.href = 'register.html?uid=' + uid + '&target=booking';
                         }
                     })
                     .catch(error => {

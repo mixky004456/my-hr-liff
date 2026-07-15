@@ -526,8 +526,7 @@
                     document.getElementById('loadingSection').style.display = 'none';
 
                     if (response.status !== 'success' || !response.data) {
-                        document.getElementById('errorSection').innerHTML = '<h4><i class="bi bi-shield-x"></i> ไม่พบสิทธิ์</h4><p>ระบบไม่พบข้อมูลพนักงานของคุณ กรุณาลงทะเบียนผูกบัญชีก่อนใช้งาน</p>';
-                        document.getElementById('errorSection').style.display = 'block';
+                        window.location.href = 'register.html?uid=' + UID_FROM_LINE + '&target=training';
                         return;
                     }
 
