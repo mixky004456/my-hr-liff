@@ -356,7 +356,11 @@
 
             // ปุ่ม
             if (course.status === 'เปิดรับสมัคร') {
-                html += `<button class="btn btn-register available" onclick="registerCourse('${course.courseName.replace(/'/g, "\\'")}', '${course.date}', '${course.duration}')"><i class="bi bi-check-circle"></i> ลงทะเบียนเข้าร่วม</button>`;
+                if (course.docUrl) {
+                    html += `<a href="${course.docUrl}" target="_blank" class="btn btn-register available text-decoration-none text-center d-block"><i class="bi bi-file-earmark-arrow-down"></i> ดาวน์โหลดเอกสารสมัคร</a>`;
+                } else {
+                    html += `<button class="btn btn-register" disabled><i class="bi bi-info-circle"></i> ติดต่อรับเอกสารสมัครที่ HR</button>`;
+                }
             } else if (course.status === 'ปิดรับสมัคร') {
                 html += `<button class="btn btn-register" disabled><i class="bi bi-x-circle"></i> ปิดรับสมัครแล้ว</button>`;
             } else {
@@ -367,74 +371,6 @@
 
             card.innerHTML = html;
             return card;
-        }
-
-        // ฟังก์ชันลงทะเบียนอบรม
-        function registerCourse(courseName, courseDate, duration) {
-            if (!currentUser) return;
-
-            Swal.fire({
-                title: 'ยืนยันการลงทะเบียน?',
-                html: `<div style="text-align:left; font-size:0.9rem; line-height:1.8;">
-                    <b>หลักสูตร:</b> ${courseName}<br>
-                    <b>วันที่:</b> ${courseDate}<br>
-                    <b>ระยะเวลา:</b> ${duration || '-'}<br>
-                    <b>ผู้ลงทะเบียน:</b> ${currentUser.name}
-                </div>`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#94a3b8',
-                confirmButtonText: '<i class="bi bi-check-circle"></i> ยืนยันลงทะเบียน',
-                cancelButtonText: 'ยกเลิก',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-                    fetch(GAS_API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'processTrainingReg',
-                            data: {
-                                empName: currentUser.name,
-                                empId: currentUser.empId,
-                                department: currentUser.department,
-                                courseName: courseName,
-                                courseDate: courseDate,
-                                duration: duration
-                            }
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(response => {
-                        if (response.status === 'success') {
-                            if (response.message === 'already_registered') {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'ลงทะเบียนแล้ว',
-                                    text: 'คุณเคยลงทะเบียนหลักสูตรนี้แล้วครับ',
-                                    confirmButtonColor: '#16a34a'
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'ลงทะเบียนสำเร็จ!',
-                                    text: `ระบบบันทึกการลงทะเบียนหลักสูตร "${courseName}" เรียบร้อยแล้วครับ`,
-                                    confirmButtonColor: '#16a34a'
-                                });
-                                // รีโหลดประวัติ
-                                loadTrainingHistory();
-                            }
-                        } else {
-                            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: response.message, confirmButtonColor: '#16a34a' });
-                        }
-                    })
-                    .catch(err => {
-                        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: err.message, confirmButtonColor: '#16a34a' });
-                    });
-                }
-            });
         }
 
         // ฟังก์ชันโหลดหลักสูตรจาก API
