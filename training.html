@@ -526,7 +526,8 @@
                     document.getElementById('loadingSection').style.display = 'none';
 
                     if (response.status !== 'success' || !response.data) {
-                        window.location.href = 'register.html?uid=' + UID_FROM_LINE + '&target=training';
+                        document.getElementById('errorSection').innerHTML = '<div style="padding:30px 10px;text-align:center;"><div style="width:70px;height:70px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:2rem;color:#ef4444;"><i class="bi bi-person-x-fill"></i></div><h5 style="color:#ef4444;font-weight:600;">ไม่พบข้อมูลพนักงาน</h5><p style="color:#64748b;font-size:0.88rem;line-height:1.8;">ระบบไม่พบข้อมูลของคุณในฐานข้อมูล<br>กรุณาติดต่อ <b style="color:#334155;">ฝ่ายบุคคล (HR)</b><br>เพื่อดำเนินการลงทะเบียนเข้าใช้งาน</p></div>';
+                        document.getElementById('errorSection').style.display = 'block';
                         return;
                     }
 
