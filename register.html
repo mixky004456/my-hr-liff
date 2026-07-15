@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="config.js"></script>
     <style>
         body {
@@ -282,7 +283,10 @@
         let UID_FROM_LINE = '';
         let REDIRECT_TARGET = 'leave'; // ค่าเริ่มต้น
 
-        window.onload = function () {
+        window.onload = async function () {
+            // เริ่มต้น LIFF เพื่อให้สามารถปิดหน้าต่างได้
+            try { await liff.init({ liffId: '2010429320-3JYooRcB' }); } catch(e) {}
+
             // ดึง uid และ target จาก URL
             const urlParams = new URLSearchParams(window.location.search);
             const uid = urlParams.get('uid');
@@ -365,15 +369,14 @@
                         icon: 'success',
                         title: 'ลงทะเบียนสำเร็จ! 🎉',
                         html: `<div style="font-size:0.9rem;line-height:1.8;">
-                            บัญชี LINE ของคุณถูกผูกกับ<br>
-                            <b>${empName}</b> (${empId})<br>
-                            เรียบร้อยแล้ว<br><br>
                             <span style="color:#16a34a;font-weight:600;">✅ คุณสามารถใช้งานระบบได้แล้ว</span><br>
                             <span style="color:#64748b;font-size:0.85rem;">กรุณากลับไปกดที่เมนูในหน้า LINE<br>เพื่อเข้าใช้งานระบบได้เลยค่ะ</span>
                         </div>`,
                         confirmButtonColor: '#16a34a',
                         confirmButtonText: 'รับทราบ',
                         allowOutsideClick: false
+                    }).then(() => {
+                        try { liff.closeWindow(); } catch(e) { window.close(); }
                     });
                 } else {
                     let errMsg = response.message || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
