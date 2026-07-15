@@ -443,7 +443,7 @@
                         let totalHours = 0;
                         let passedCount = 0;
                         records.forEach(r => {
-                            if (r.status === 'ผ่านการอบรม') {
+                            if (r.status === 'ผ่านการอบรม' || r.status === 'ผ่าน') {
                                 totalHours += parseFloat(r.duration) || 0;
                                 passedCount++;
                             }
@@ -461,7 +461,7 @@
                             let statusBadge = '';
                             let bgColor = '#f8fafc';
 
-                            if (record.status === 'ผ่านการอบรม') {
+                            if (record.status === 'ผ่านการอบรม' || record.status === 'ผ่าน') {
                                 statusBadge = '<span class="badge bg-success">ผ่านการอบรม</span>';
                             } else if (record.status === 'รอเข้าอบรม') {
                                 statusBadge = '<span class="badge bg-warning text-dark">รอเข้าอบรม</span>';
@@ -473,10 +473,20 @@
                                 statusBadge = `<span class="badge bg-secondary">${record.status}</span>`;
                             }
 
+                            let typeBadge = '';
+                            if (record.type === 'ภายนอก') {
+                                typeBadge = '<span class="badge bg-warning text-dark ms-1">อบรมภายนอก</span>';
+                            } else {
+                                typeBadge = '<span class="badge bg-info text-dark ms-1">อบรมภายใน</span>';
+                            }
+
                             let cardHtml = `<div class="course-card" style="background-color: ${bgColor};">
                                 <div class="course-card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        ${statusBadge}
+                                        <div>
+                                            ${statusBadge}
+                                            ${typeBadge}
+                                        </div>
                                         <small class="text-muted">${record.date}</small>
                                     </div>
                                     <div class="course-title" style="font-size: 0.95rem;">${record.courseName}</div>
