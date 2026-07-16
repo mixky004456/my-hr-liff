@@ -392,7 +392,20 @@
 
                         courses.forEach(course => {
                             let card = buildCourseCard(course);
-                            if (course.type === 'ภายนอก') {
+                            
+                            // ตรวจสอบว่าจะให้แสดงที่แท็บไหน
+                            let showInInterestTab = false;
+                            
+                            if (course.displayTab === 'หลักสูตรที่สนใจ') {
+                                showInInterestTab = true;
+                            } else if (course.displayTab === 'อบรมประจำปี') {
+                                showInInterestTab = false;
+                            } else {
+                                // ถ้าไม่ได้ระบุ (ปล่อยว่างไว้) ให้ใช้ค่าเริ่มต้นตามของเดิม
+                                showInInterestTab = (course.type === 'ภายนอก');
+                            }
+
+                            if (showInInterestTab) {
                                 externalList.appendChild(card);
                                 externalCount++;
                             } else {
