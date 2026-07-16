@@ -280,9 +280,16 @@
                             style="display: none; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
                             <div class="progress-row"
                                 style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
-                                <div class="progress-label" style="flex: 1;">ลาคลอด <span
-                                        style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(สูงสุด 60
-                                        วัน/ครั้ง)</span></div>
+                                <div class="progress-label" style="flex: 1;">ลาคลอด 
+                                    <i class="bi bi-info-circle-fill text-secondary ms-1" style="cursor: pointer; font-size: 1.1rem;" 
+                                       onclick="Swal.fire({
+                                           icon: 'info',
+                                           title: 'หมายเหตุการลาคลอด',
+                                           text: 'การลาคลอดสามารถลาคลอดได้สูงสุด 60 วัน ถ้าเกิน 60 วันจะไม่ได้รับค่าจ้าง (สิทธิ์ 1 ครั้งต่อ 1 ปี)',
+                                           confirmButtonColor: '#16a34a',
+                                           confirmButtonText: 'ตกลง'
+                                       })"></i>
+                                </div>
                                 <div class="progress-text" style="flex: 1; text-align: right;" id="qt-maternity">-</div>
                             </div>
                             <div class="progress-row"
