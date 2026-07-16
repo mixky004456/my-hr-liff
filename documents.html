@@ -192,6 +192,7 @@
     <script>
         // Mock Data for Documents
         const documents = [
+            { id: 99, title: 'เอกสารจากลิงก์ Google Drive', description: 'ไฟล์ที่คุณต้องการให้ดาวน์โหลด', category: 'General', type: 'general', link: 'https://drive.google.com/uc?export=download&id=1XEDxZ6pSJZy2qFikC8nmhzn51H1dJqj5' },
             { id: 1, title: 'แบบฟอร์มขอลาหยุด', description: 'แบบฟอร์มสำหรับการขอลาหยุด ลาป่วย ลากิจ', category: 'HR Forms', type: 'pdf', link: '#' },
             { id: 2, title: 'นโยบายการทำงานที่บ้าน (WFH)', description: 'กฎระเบียบและแนวทางในการปฏิบัติงานที่บ้าน', category: 'Policy', type: 'pdf', link: '#' },
             { id: 3, title: 'คู่มือการเบิกค่าใช้จ่าย', description: 'ขั้นตอนและเอกสารที่ต้องใช้ในการเบิกค่าเดินทาง', category: 'Finance', type: 'pdf', link: '#' },
@@ -202,7 +203,7 @@
             { id: 8, title: 'นโยบายความปลอดภัย IT', description: 'ข้อควรปฏิบัติในการใช้งานคอมพิวเตอร์ของบริษัท', category: 'IT', type: 'pdf', link: '#' },
         ];
 
-        const categories = ['All', 'HR Forms', 'Policy', 'Finance', 'Templates', 'Sales', 'IT'];
+        const categories = ['All', 'HR Forms', 'Policy', 'Finance', 'Templates', 'Sales', 'IT', 'General'];
         
         let currentCategory = 'All';
         let searchQuery = '';
