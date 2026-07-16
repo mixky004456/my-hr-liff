@@ -51,28 +51,39 @@
             font-size: 1.2rem;
         }
         .category-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 40px;
+            max-width: 350px;
+            margin: 0 auto 40px;
+            position: relative;
         }
-        .category-btn {
-            background: #fff;
-            border: none;
-            padding: 8px 20px;
+        .category-select {
+            width: 100%;
+            padding: 14px 20px;
             border-radius: 50px;
-            color: #64748b;
-            font-weight: 500;
+            border: 2px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            font-size: 1rem;
+            color: #475569;
+            background-color: #fff;
             cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            font-family: 'Prompt', sans-serif;
+            font-weight: 500;
         }
-        .category-btn:hover, .category-btn.active {
-            background: #3b82f6;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
+        .category-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.15);
+        }
+        .category-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            font-size: 1.2rem;
         }
         .document-card {
             background: #fff;
@@ -160,8 +171,11 @@
             <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาเอกสาร... (เช่น แบบฟอร์ม, นโยบาย)">
         </div>
 
-        <div class="category-container" id="categoryContainer">
-            <!-- Categories will be generated here -->
+        <div class="category-container">
+            <select id="categorySelect" class="category-select" onchange="setCategory(this.value)">
+                <!-- Categories will be generated here -->
+            </select>
+            <i class="bi bi-chevron-down category-icon"></i>
         </div>
 
         <div class="row g-4" id="documentGrid">
@@ -205,21 +219,19 @@
             });
         });
 
-        // Render Category Buttons
+        // Render Category Dropdown Options
         function renderCategories() {
-            const container = document.getElementById('categoryContainer');
-            container.innerHTML = categories.map(cat => `
-                <button class="category-btn ${cat === currentCategory ? 'active' : ''}" 
-                        onclick="setCategory('${cat}')">
-                    ${cat === 'All' ? 'ทั้งหมด' : cat}
-                </button>
+            const select = document.getElementById('categorySelect');
+            select.innerHTML = categories.map(cat => `
+                <option value="${cat}" ${cat === currentCategory ? 'selected' : ''}>
+                    ${cat === 'All' ? 'หมวดหมู่ทั้งหมด (All Categories)' : cat}
+                </option>
             `).join('');
         }
 
         // Set Active Category
         function setCategory(cat) {
             currentCategory = cat;
-            renderCategories(); // Re-render to update active class
             renderDocuments();
         }
 
