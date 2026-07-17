@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบดาวน์โหลดเอกสาร</title>
+    <script src="config.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -180,6 +181,12 @@
 
         <div class="row g-4" id="documentGrid">
             <!-- Documents will be generated here -->
+            <div class="col-12 text-center py-5" id="loadingDocs">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">กำลังดึงข้อมูลเอกสาร...</p>
+            </div>
         </div>
         
         <div id="noResults" class="text-center py-5 d-none">
@@ -190,28 +197,14 @@
     </div>
 
     <script>
-        // Mock Data for Documents
-        const documents = [
-            { id: 99, title: 'เอกสารจากลิงก์ Google Drive', description: 'ไฟล์ที่คุณต้องการให้ดาวน์โหลด', category: 'General', type: 'general', link: 'https://drive.google.com/uc?export=download&id=1XEDxZ6pSJZy2qFikC8nmhzn51H1dJqj5' },
-            { id: 1, title: 'แบบฟอร์มขอลาหยุด', description: 'แบบฟอร์มสำหรับการขอลาหยุด ลาป่วย ลากิจ', category: 'HR Forms', type: 'pdf', link: '#' },
-            { id: 2, title: 'นโยบายการทำงานที่บ้าน (WFH)', description: 'กฎระเบียบและแนวทางในการปฏิบัติงานที่บ้าน', category: 'Policy', type: 'pdf', link: '#' },
-            { id: 3, title: 'คู่มือการเบิกค่าใช้จ่าย', description: 'ขั้นตอนและเอกสารที่ต้องใช้ในการเบิกค่าเดินทาง', category: 'Finance', type: 'pdf', link: '#' },
-            { id: 4, title: 'แบบประเมินผลการปฏิบัติงาน', description: 'แบบฟอร์มสำหรับประเมินผลงานประจำปี', category: 'HR Forms', type: 'word', link: '#' },
-            { id: 5, title: 'แม่แบบ Presentation องค์กร', description: 'ไฟล์ Powerpoint มาตรฐานสำหรับนำเสนองาน', category: 'Templates', type: 'general', link: '#' },
-            { id: 6, title: 'รายงานสรุปยอดขายประจำเดือน', description: 'ไฟล์ Excel สรุปยอดขาย (Template)', category: 'Sales', type: 'excel', link: '#' },
-            { id: 7, title: 'คู่มือพนักงานใหม่', description: 'ข้อมูลเบื้องต้นที่พนักงานใหม่ทุกคนควรรู้', category: 'HR Forms', type: 'pdf', link: '#' },
-            { id: 8, title: 'นโยบายความปลอดภัย IT', description: 'ข้อควรปฏิบัติในการใช้งานคอมพิวเตอร์ของบริษัท', category: 'IT', type: 'pdf', link: '#' },
-        ];
-
-        const categories = ['All', 'HR Forms', 'Policy', 'Finance', 'Templates', 'Sales', 'IT', 'General'];
-        
+        let documents = [];
+        let categories = ['All'];
         let currentCategory = 'All';
         let searchQuery = '';
 
         // Initialize Page
         document.addEventListener('DOMContentLoaded', () => {
-            renderCategories();
-            renderDocuments();
+            fetchDocuments();
 
             // Search Input Event
             document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -219,6 +212,31 @@
                 renderDocuments();
             });
         });
+
+        // Fetch Documents from Google Apps Script API
+        async function fetchDocuments() {
+            try {
+                const response = await fetch(GAS_API_URL + "?action=getSheetDocuments");
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    documents = result.data;
+                    
+                    // Extract unique categories
+                    const uniqueCats = [...new Set(documents.map(doc => doc.category))];
+                    categories = ['All', ...uniqueCats];
+                    
+                    document.getElementById('loadingDocs').style.display = 'none';
+                    renderCategories();
+                    renderDocuments();
+                } else {
+                    document.getElementById('loadingDocs').innerHTML = `<p class="text-danger">เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถโหลดข้อมูลได้'}</p>`;
+                }
+            } catch (error) {
+                console.error("Error fetching documents:", error);
+                document.getElementById('loadingDocs').innerHTML = '<p class="text-danger">ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้</p>';
+            }
+        }
 
         // Render Category Dropdown Options
         function renderCategories() {
@@ -251,6 +269,11 @@
             const grid = document.getElementById('documentGrid');
             const noResults = document.getElementById('noResults');
             
+            // Remove previous items but keep loading element (already hidden)
+            Array.from(grid.children).forEach(child => {
+                if(child.id !== 'loadingDocs') grid.removeChild(child);
+            });
+            
             // Filter Data
             const filteredDocs = documents.filter(doc => {
                 const matchCategory = currentCategory === 'All' || doc.category === currentCategory;
@@ -260,14 +283,17 @@
             });
 
             if (filteredDocs.length === 0) {
-                grid.innerHTML = '';
                 noResults.classList.remove('d-none');
+                if (documents.length === 0) {
+                    noResults.querySelector('h4').innerText = 'ไม่พบเอกสารในระบบ';
+                    noResults.querySelector('p').innerText = 'ยังไม่มีการเพิ่มข้อมูลเอกสารใน Google Sheets';
+                }
                 return;
             }
 
             noResults.classList.add('d-none');
             
-            grid.innerHTML = filteredDocs.map(doc => {
+            const html = filteredDocs.map(doc => {
                 const iconData = getIconData(doc.type);
                 return `
                     <div class="col-12 col-md-6 col-lg-4">
@@ -287,6 +313,8 @@
                     </div>
                 `;
             }).join('');
+            
+            grid.insertAdjacentHTML('beforeend', html);
         }
     </script>
 </body>
