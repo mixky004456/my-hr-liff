@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,33 +16,38 @@
             padding: 40px 15px;
             color: #334155;
         }
+
         .header-title {
             font-weight: 600;
             color: #0f172a;
             margin-bottom: 20px;
             text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
         .search-container {
             max-width: 600px;
             margin: 0 auto 30px;
             position: relative;
         }
+
         .search-input {
             width: 100%;
             padding: 16px 20px 16px 50px;
             border-radius: 50px;
             border: 2px solid #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             font-size: 1rem;
             transition: all 0.3s ease;
             background: #fff;
         }
+
         .search-input:focus {
             outline: none;
             border-color: #16a34a;
             box-shadow: 0 10px 25px rgba(22, 163, 74, 0.15);
         }
+
         .search-icon {
             position: absolute;
             left: 20px;
@@ -50,17 +56,19 @@
             color: #94a3b8;
             font-size: 1.2rem;
         }
+
         .category-container {
             max-width: 350px;
             margin: 0 auto 40px;
             position: relative;
         }
+
         .category-select {
             width: 100%;
             padding: 14px 20px;
             border-radius: 50px;
             border: 2px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             font-size: 1rem;
             color: #475569;
             background-color: #fff;
@@ -71,11 +79,13 @@
             font-family: 'Prompt', sans-serif;
             font-weight: 500;
         }
+
         .category-select:focus {
             outline: none;
             border-color: #16a34a;
             box-shadow: 0 5px 15px rgba(22, 163, 74, 0.15);
         }
+
         .category-icon {
             position: absolute;
             right: 20px;
@@ -85,21 +95,24 @@
             pointer-events: none;
             font-size: 1.2rem;
         }
+
         .knowledge-card {
             background: #fff;
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
+
         .knowledge-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
+
         .k-icon-wrapper {
             width: 50px;
             height: 50px;
@@ -110,12 +123,32 @@
             font-size: 1.5rem;
             margin-bottom: 16px;
         }
-        .icon-hr { background: #fee2e2; color: #ef4444; }
-        .icon-it { background: #dbeafe; color: #3b82f6; }
-        .icon-qms { background: #dcfce7; color: #22c55e; }
-        .icon-academic { background: #fef08a; color: #eab308; }
-        .icon-general { background: #f3f4f6; color: #6b7280; }
-        
+
+        .icon-hr {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .icon-it {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .icon-qms {
+            background: #dcfce7;
+            color: #22c55e;
+        }
+
+        .icon-academic {
+            background: #fef08a;
+            color: #eab308;
+        }
+
+        .icon-general {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
         .k-title {
             font-weight: 600;
             font-size: 1.1rem;
@@ -126,6 +159,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
         .k-desc {
             color: #64748b;
             font-size: 0.9rem;
@@ -136,12 +170,14 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
         .k-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
         }
+
         .k-category {
             font-size: 0.75rem;
             padding: 4px 10px;
@@ -150,6 +186,7 @@
             color: #475569;
             font-weight: 500;
         }
+
         .btn-read {
             background: #f8fafc;
             color: #16a34a;
@@ -165,6 +202,7 @@
             gap: 6px;
             cursor: pointer;
         }
+
         .btn-read:hover {
             background: #16a34a;
             color: #fff;
@@ -172,13 +210,15 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1 class="header-title">องค์ความรู้ (Knowledge Base)</h1>
-        
+
         <div class="search-container">
             <i class="bi bi-search search-icon"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาบทความ... (เช่น วิธีเบิก, คู่มือการใช้งาน)">
+            <input type="text" id="searchInput" class="search-input"
+                placeholder="ค้นหาบทความ... (เช่น วิธีเบิก, คู่มือการใช้งาน)">
         </div>
 
         <div class="category-container">
@@ -191,7 +231,7 @@
         <div class="row g-4" id="knowledgeGrid">
             <!-- Knowledge cards will be generated here -->
         </div>
-        
+
         <div id="noResults" class="text-center py-5 d-none">
             <i class="bi bi-journal-x" style="font-size: 4rem; color: #cbd5e1;"></i>
             <h4 class="mt-3 text-muted">ไม่พบบทความที่ค้นหา</h4>
@@ -210,14 +250,16 @@
                 <div class="modal-body" style="padding: 24px;">
                     <div class="mb-3">
                         <span id="articleCategory" class="k-category">หมวดหมู่</span>
-                        <span class="text-muted ms-2" style="font-size: 0.85rem;"><i class="bi bi-clock"></i> <span id="articleDate"></span></span>
+                        <span class="text-muted ms-2" style="font-size: 0.85rem;"><i class="bi bi-clock"></i> <span
+                                id="articleDate"></span></span>
                     </div>
                     <div id="articleContent" style="color: #334155; line-height: 1.8;">
                         <!-- Content goes here -->
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                    <button type="button" class="btn btn-secondary" style="border-radius: 12px; padding: 8px 20px;" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+                    <button type="button" class="btn btn-secondary" style="border-radius: 12px; padding: 8px 20px;"
+                        data-bs-dismiss="modal">ปิดหน้าต่าง</button>
                 </div>
             </div>
         </div>
@@ -227,58 +269,18 @@
     <script>
         // Mock Data for Knowledge Base
         const articles = [
-            { 
-                id: 1, 
-                title: 'คู่มือการใช้สิทธิลาพักร้อนประจำปี', 
-                description: 'เงื่อนไขและขั้นตอนการขออนุมัติลาพักร้อนผ่านระบบสำหรับพนักงานทุกคน', 
+            {
+                id: 1,
+                title: 'คู่มือการใช้สิทธิลาพักร้อนประจำปี',
+                description: 'เงื่อนไขและขั้นตอนการขออนุมัติลาพักร้อนผ่านระบบสำหรับพนักงานทุกคน',
                 content: '<p>พนักงานสามารถใช้สิทธิลาพักร้อนได้หลังจากผ่านการทดลองงาน โดยมีขั้นตอนดังนี้:</p><ol><li>เข้าสู่ระบบลางาน (Leave System)</li><li>เลือกประเภท "ลาพักร้อน"</li><li>ระบุวันที่ต้องการลา และเหตุผล</li><li>รอหัวหน้างานอนุมัติ</li></ol><p><strong>หมายเหตุ:</strong> ควรลาล่วงหน้าอย่างน้อย 3 วันทำการ</p>',
-                category: 'HR', 
+                category: 'HR',
                 date: '10 ก.ค. 2026'
-            },
-            { 
-                id: 2, 
-                title: 'วิธีแก้ปัญหาเมื่อลืมรหัสผ่านเข้าอีเมลบริษัท', 
-                description: 'ขั้นตอนการรีเซ็ตรหัสผ่านด้วยตนเองและการติดต่อแผนก IT กรณีฉุกเฉิน', 
-                content: '<p>หากคุณลืมรหัสผ่านอีเมลบริษัท ให้ทำตามขั้นตอนต่อไปนี้:</p><ul><li>ไปที่หน้า Login และคลิก "Forgot Password"</li><li>ระบบจะส่งรหัส OTP ไปยังเบอร์โทรศัพท์ที่ลงทะเบียนไว้</li><li>กรอก OTP และตั้งรหัสผ่านใหม่ (ควรมีตัวอักษรพิมพ์ใหญ่ พิมพ์เล็ก ตัวเลข และสัญลักษณ์)</li></ul><p>หากไม่สามารถทำได้ กรุณาติดต่อ IT Support ภายในเวลาทำการ</p>',
-                category: 'IT', 
-                date: '12 ก.ค. 2026'
-            },
-            { 
-                id: 3, 
-                title: 'ขั้นตอนการควบคุมเอกสาร (Document Control)', 
-                description: 'ระเบียบปฏิบัติสำหรับการขึ้นทะเบียน แก้ไข และยกเลิกเอกสารในระบบ ISO', 
-                content: '<p>การควบคุมเอกสารตามมาตรฐาน ISO มีขั้นตอนดังนี้:</p><p>1. <strong>การจัดทำ/แก้ไข:</strong> ผู้ร้องขอต้องกรอกแบบฟอร์ม DAR (Document Action Request)<br>2. <strong>การทบทวน:</strong> ส่งให้ผู้บังคับบัญชาทบทวนความถูกต้อง<br>3. <strong>การอนุมัติ:</strong> QMS Manager อนุมัติและประกาศใช้<br>4. <strong>การแจกจ่าย:</strong> DCC จะทำการแจกจ่ายเอกสารฉบับล่าสุด</p>',
-                category: 'QMS', 
-                date: '15 ก.ค. 2026'
-            },
-            { 
-                id: 4, 
-                title: 'เทคนิคการเขียนแผนการสอนยุคใหม่', 
-                description: 'รวบรวมเทคนิคและวิธีการออกแบบแผนการสอนที่เน้นผู้เรียนเป็นสำคัญ (Active Learning)', 
-                content: '<p>การเขียนแผนการสอนแบบ Active Learning ควรประกอบด้วย:</p><ul><li><strong>วัตถุประสงค์ที่ชัดเจน:</strong> ผู้เรียนทำอะไรได้บ้างหลังจบคาบ</li><li><strong>กิจกรรมกระตุ้นความสนใจ:</strong> ใช้เกม หรือคำถามท้าทาย (5-10 นาทีแรก)</li><li><strong>การลงมือปฏิบัติ:</strong> ให้ผู้เรียนได้ทดลองทำจริง หรือระดมสมองเป็นกลุ่ม</li><li><strong>การสะท้อนความคิด (Reflection):</strong> สรุปสิ่งที่ได้เรียนรู้ร่วมกัน</li></ul>',
-                category: 'วิชาการ', 
-                date: '17 ก.ค. 2026'
-            },
-            { 
-                id: 5, 
-                title: 'ระเบียบการเบิกจ่ายค่ารักษาพยาบาล', 
-                description: 'อัปเดตสวัสดิการค่ารักษาพยาบาล วงเงิน และเอกสารที่ต้องใช้ประกอบการเบิก', 
-                content: '<p>พนักงานสามารถเบิกค่ารักษาพยาบาลได้ตามวงเงินที่บริษัทกำหนด (ผู้ป่วยนอก 15,000 บาท/ปี)</p><p><strong>เอกสารที่ต้องใช้:</strong></p><ol><li>ใบเสร็จรับเงินฉบับจริง</li><li>ใบรับรองแพทย์ฉบับจริง</li><li>แบบฟอร์มขอเบิกสวัสดิการ</li></ol><p>ส่งเอกสารที่ฝ่ายบุคคล ภายใน 30 วันนับจากวันที่เข้ารับการรักษา</p>',
-                category: 'HR', 
-                date: '01 ก.ค. 2026'
-            },
-            { 
-                id: 6, 
-                title: 'แนวทางการเชื่อมต่อ VPN เมื่อทำงานที่บ้าน', 
-                description: 'คู่มือการติดตั้งและใช้งานระบบ VPN เพื่อเข้าถึงเซิร์ฟเวอร์ภายในบริษัท', 
-                content: '<p>สำหรับการ Work from Home พนักงานต้องเชื่อมต่อ VPN ก่อนเข้าถึงระบบภายในบริษัท</p><p>1. ดาวน์โหลดโปรแกรม FortiClient VPN จาก Intranet<br>2. ติดตั้งและเปิดโปรแกรม<br>3. กรอก Server Address: <code>vpn.gammaco.com</code><br>4. ใส่ Username และ Password ของบริษัท<br>5. กดยอมรับการเชื่อมต่อ</p>',
-                category: 'IT', 
-                date: '05 ก.ค. 2026'
             }
         ];
 
         const categories = ['All', 'HR', 'IT', 'QMS', 'วิชาการ'];
-        
+
         let currentCategory = 'All';
         let searchQuery = '';
 
@@ -312,7 +314,7 @@
 
         // Get Icon Class based on category
         function getIconData(category) {
-            switch(category) {
+            switch (category) {
                 case 'HR': return { class: 'icon-hr', icon: 'bi-people-fill' };
                 case 'IT': return { class: 'icon-it', icon: 'bi-pc-display' };
                 case 'QMS': return { class: 'icon-qms', icon: 'bi-clipboard-check-fill' };
@@ -329,7 +331,7 @@
                 document.getElementById('articleCategory').innerText = article.category;
                 document.getElementById('articleDate').innerText = article.date;
                 document.getElementById('articleContent').innerHTML = article.content;
-                
+
                 const modal = new bootstrap.Modal(document.getElementById('articleModal'));
                 modal.show();
             }
@@ -339,12 +341,12 @@
         function renderArticles() {
             const grid = document.getElementById('knowledgeGrid');
             const noResults = document.getElementById('noResults');
-            
+
             // Filter Data
             const filteredArticles = articles.filter(doc => {
                 const matchCategory = currentCategory === 'All' || doc.category === currentCategory;
-                const matchSearch = doc.title.toLowerCase().includes(searchQuery) || 
-                                    doc.description.toLowerCase().includes(searchQuery);
+                const matchSearch = doc.title.toLowerCase().includes(searchQuery) ||
+                    doc.description.toLowerCase().includes(searchQuery);
                 return matchCategory && matchSearch;
             });
 
@@ -355,7 +357,7 @@
             }
 
             noResults.classList.add('d-none');
-            
+
             grid.innerHTML = filteredArticles.map(doc => {
                 const iconData = getIconData(doc.category);
                 return `
@@ -379,4 +381,5 @@
         }
     </script>
 </body>
+
 </html>
