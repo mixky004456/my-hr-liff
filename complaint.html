@@ -276,8 +276,11 @@
                             <label class="form-label" id="evidenceLabel"><i class="bi bi-image"></i>
                                 อัปโหลดรูปภาพหลักฐาน <span class="text-muted"
                                     style="font-size:0.8rem;">(ถ้ามี)</span></label>
-                            <input type="file" class="form-control" id="evidenceFile" accept="image/*"
-                                style="padding: 10px 15px;">
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="evidenceFile" accept="image/*"
+                                    style="padding: 10px 15px;">
+                                <button class="btn btn-outline-danger" type="button" id="clearEvidenceFile" title="ลบไฟล์" style="display: none;"><i class="bi bi-x-lg"></i></button>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100" id="submitBtn">
@@ -470,6 +473,19 @@
                 };
                 reader.onerror = reject;
                 reader.readAsDataURL(file);
+            });
+        }
+
+        // File input clear logic
+        const evInput = document.getElementById('evidenceFile');
+        const clearEvBtn = document.getElementById('clearEvidenceFile');
+        if (evInput && clearEvBtn) {
+            evInput.addEventListener('change', function() {
+                clearEvBtn.style.display = this.value ? 'block' : 'none';
+            });
+            clearEvBtn.addEventListener('click', function() {
+                evInput.value = '';
+                clearEvBtn.style.display = 'none';
             });
         }
     </script>

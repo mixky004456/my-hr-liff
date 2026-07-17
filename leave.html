@@ -424,7 +424,10 @@
                         <div id="medicalCertGroup" class="mb-4" style="display: none;">
                             <label class="form-label" id="medicalCertLabel"><i class="bi bi-image"></i>
                                 อัปโหลดใบรับรองแพทย์ <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="medicalCert" accept="image/*">
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="medicalCert" accept="image/*">
+                                <button class="btn btn-outline-danger" type="button" id="clearMedicalCert" title="ลบไฟล์" style="display: none;"><i class="bi bi-x-lg"></i></button>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100" id="submitBtn"><i
@@ -878,6 +881,19 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                 });
+            });
+        }
+
+        // File input clear logic
+        const medInput = document.getElementById('medicalCert');
+        const clearMedBtn = document.getElementById('clearMedicalCert');
+        if (medInput && clearMedBtn) {
+            medInput.addEventListener('change', function() {
+                clearMedBtn.style.display = this.value ? 'block' : 'none';
+            });
+            clearMedBtn.addEventListener('click', function() {
+                medInput.value = '';
+                clearMedBtn.style.display = 'none';
             });
         }
     </script>
