@@ -264,6 +264,33 @@
             }
         }
 
+        // Format Google Drive Link to Direct Download Link
+        function getDownloadLink(link) {
+            if (!link || link === '#') return '#';
+            
+            let finalLink = link;
+            
+            // แปลงลิงก์ Google Drive view เป็นลิงก์ดาวน์โหลดตรง
+            if (link.includes('drive.google.com/file/d/')) {
+                const match = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    finalLink = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                }
+            } else if (link.includes('drive.google.com/open?id=')) {
+                const match = link.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    finalLink = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                }
+            }
+
+            // บังคับให้เปิดเบราว์เซอร์ภายนอกใน LINE (Safari/Chrome)
+            if (finalLink !== '#') {
+                finalLink += (finalLink.includes('?') ? '&' : '?') + 'openExternalBrowser=1';
+            }
+            
+            return finalLink;
+        }
+
         // Render Document Cards
         function renderDocuments() {
             const grid = document.getElementById('documentGrid');
@@ -295,6 +322,7 @@
             
             const html = filteredDocs.map(doc => {
                 const iconData = getIconData(doc.type);
+                const downloadUrl = getDownloadLink(doc.link);
                 return `
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="document-card">
@@ -305,7 +333,7 @@
                             <p class="doc-desc">${doc.description}</p>
                             <div class="doc-meta">
                                 <span class="doc-category">${doc.category}</span>
-                                <a href="${doc.link === '#' ? '#' : doc.link + (doc.link.includes('?') ? '&' : '?') + 'openExternalBrowser=1'}" class="btn-download" target="_blank" rel="noopener noreferrer">
+                                <a href="${downloadUrl}" class="btn-download" ${downloadUrl !== '#' ? 'target="_blank" rel="noopener noreferrer"' : ''}>
                                     <i class="bi bi-download"></i> โหลด
                                 </a>
                             </div>
