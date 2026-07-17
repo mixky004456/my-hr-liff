@@ -81,23 +81,28 @@
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            border: none;
-            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
-            border-radius: 14px;
-            padding: 16px;
+            background: #f8fafc;
+            color: #16a34a;
+            border: 1.5px solid #16a34a;
+            border-radius: 12px;
+            padding: 14px;
             font-weight: 600;
             font-size: 1.1rem;
             width: 100%;
             margin-top: 15px;
-            color: white;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.05);
         }
 
         .btn-submit:hover {
+            background: #16a34a;
+            color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
-            color: white;
+            box-shadow: 0 8px 15px rgba(22, 163, 74, 0.2);
         }
 
         .loading {
