@@ -257,6 +257,7 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
+                    <a href="#" id="pdfDownloadBtn" target="_blank" class="btn btn-primary d-none" style="border-radius: 12px; padding: 8px 20px;"><i class="bi bi-file-earmark-pdf"></i> อ่านฉบับเต็ม (PDF)</a>
                     <button type="button" class="btn btn-secondary" style="border-radius: 12px; padding: 8px 20px;"
                         data-bs-dismiss="modal">ปิดหน้าต่าง</button>
                 </div>
@@ -362,6 +363,14 @@
                 document.getElementById('articleCategory').innerText = article.category;
                 document.getElementById('articleDate').innerText = article.date;
                 document.getElementById('articleContent').innerHTML = article.content;
+
+                const pdfBtn = document.getElementById('pdfDownloadBtn');
+                if (article.pdfLink) {
+                    pdfBtn.href = article.pdfLink;
+                    pdfBtn.classList.remove('d-none');
+                } else {
+                    pdfBtn.classList.add('d-none');
+                }
 
                 const modal = new bootstrap.Modal(document.getElementById('articleModal'));
                 modal.show();
