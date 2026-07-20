@@ -59,7 +59,7 @@
 
         .form-control,
         .form-select {
-            border-radius: 50px;
+            border-radius: 14px;
             padding: 14px 18px;
             border: 1.5px solid #e2e8f0;
             background-color: #f8fafc;
@@ -81,30 +81,24 @@
             font-size: 0.95rem;
         }
 
-
-        /* ปุ่ม Submit */
         .btn-primary {
-            background: #16a34a;
-            color: #ffffff;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             border: none;
-            border-radius: 50px;
-            padding: 14px;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+            border-radius: 14px;
+            padding: 16px;
             font-weight: 600;
             font-size: 1.1rem;
-            transition: all 0.2s ease;
+            color: #fff;
+            transition: all 0.3s ease;
             margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
         }
 
         .btn-primary:hover {
-            background: #15803d;
-            color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(22, 163, 74, 0.3);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+            color: #fff;
         }
 
         /* กล่องข้อมูลพนักงาน */
@@ -198,6 +192,10 @@
                 font-size: 1.1rem;
             }
 
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px;
+            }
 
             .form-control,
             .form-select {
