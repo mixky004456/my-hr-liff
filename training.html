@@ -137,6 +137,11 @@
             color: #d97706;
         }
 
+        .instructor-badge.ojt {
+            background-color: #ede9fe;
+            color: #7c3aed;
+        }
+
         .status-badge {
             display: inline-block;
             padding: 3px 10px;
@@ -333,8 +338,8 @@
             }
 
             // ป้ายวิทยากร
-            let instructorTypeClass = course.type === 'ภายนอก' ? 'external' : 'internal';
-            let instructorTypeLabel = course.type === 'ภายนอก' ? 'วิทยากรภายนอก' : 'วิทยากรภายใน';
+            let instructorTypeClass = course.type === 'ภายนอก' ? 'external' : (course.type === 'OJT' || course.type === 'O.J.T.' ? 'ojt' : 'internal');
+            let instructorTypeLabel = course.type === 'ภายนอก' ? 'วิทยากรภายนอก' : (course.type === 'OJT' || course.type === 'O.J.T.' ? 'OJT (หน้างาน)' : 'วิทยากรภายใน');
 
             html += `<div class="course-card-body">`;
             html += `<div class="d-flex justify-content-between align-items-start mb-1">`;
@@ -474,6 +479,8 @@
                             let typeBadge = '';
                             if (record.type === 'ภายนอก') {
                                 typeBadge = '<span class="badge bg-warning text-dark ms-1">อบรมภายนอก</span>';
+                            } else if (record.type === 'OJT' || record.type === 'O.J.T.') {
+                                typeBadge = '<span class="badge ms-1" style="background-color: #8b5cf6; color: white;">OJT</span>';
                             } else {
                                 typeBadge = '<span class="badge bg-info text-dark ms-1">อบรมภายใน</span>';
                             }
