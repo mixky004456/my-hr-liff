@@ -401,13 +401,14 @@
                             // ตรวจสอบว่าจะให้แสดงที่แท็บไหน
                             let showInInterestTab = false;
 
-                            if (course.displayTab === 'หลักสูตรที่สนใจ') {
+                            if (course.displayTab === 'หลักสูตรที่สนใจ' || course.displayTab === 'หลักสูตรที่น่าสนใจ' || course.displayTab === 'ภายนอก') {
                                 showInInterestTab = true;
-                            } else if (course.displayTab === 'อบรมประจำปี') {
+                            } else if (course.displayTab === 'อบรมประจำปี' || course.displayTab === 'ภายใน') {
                                 showInInterestTab = false;
                             } else {
-                                // ถ้าไม่ได้ระบุ (ปล่อยว่างไว้) ให้ใช้ค่าเริ่มต้นตามของเดิม
-                                showInInterestTab = (course.type === 'ภายนอก');
+                                // ถ้าไม่ได้ระบุ ให้ค่าเริ่มต้นเป็น "อบรมประจำปี" (จัดการโดยบริษัท) เสมอ
+                                // ไม่ว่าวิทยากรจะเป็นบุคคลภายนอกหรือไม่ก็ตาม
+                                showInInterestTab = false;
                             }
 
                             if (showInInterestTab) {
