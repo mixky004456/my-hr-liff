@@ -252,13 +252,13 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="announce-tab" data-bs-toggle="pill" data-bs-target="#announce"
                                 type="button" role="tab">
-                                <i class="bi bi-megaphone"></i> หลักสูตรที่สนใจ
+                                <i class="bi bi-megaphone"></i> หลักสูตรที่น่าสนใจ
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history"
                                 type="button" role="tab">
-                                <i class="bi bi-clock-history"></i> ประวัติการอบรม
+                                <i class="bi bi-clock-history"></i> ประวัติการอบรมของฉัน
                             </button>
                         </li>
                     </ul>
@@ -392,10 +392,10 @@
 
                         courses.forEach(course => {
                             let card = buildCourseCard(course);
-                            
+
                             // ตรวจสอบว่าจะให้แสดงที่แท็บไหน
                             let showInInterestTab = false;
-                            
+
                             if (course.displayTab === 'หลักสูตรที่สนใจ') {
                                 showInInterestTab = true;
                             } else if (course.displayTab === 'อบรมประจำปี') {
