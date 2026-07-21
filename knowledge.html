@@ -247,8 +247,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding: 24px;">
-                    <div id="articleImageContainer" class="mb-4 d-none" style="margin: -24px -24px 24px -24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-                        <img id="articleImage" src="" alt="Article Image" style="width: 100%; height: auto; display: block;">
+                    <div id="articleImageContainer" class="mb-4 d-none position-relative" style="margin: -24px -24px 30px -24px; padding: 40px 20px; text-align: center; background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #cbd5e1; overflow: hidden;">
+                        <img id="articleImage" src="" alt="Article Image" class="img-fluid" style="border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-height: 70vh; width: auto; max-width: 100%; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;" onmouseover="this.style.transform='scale(1.02) translateY(-5px)'" onmouseout="this.style.transform='scale(1) translateY(0)'">
                     </div>
                     <div class="mb-3">
                         <span id="articleCategory" class="k-category">หมวดหมู่</span>
