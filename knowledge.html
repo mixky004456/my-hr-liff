@@ -246,17 +246,14 @@
                     <h5 class="modal-title fw-bold" id="articleTitle" style="color: #0f172a;">ชื่อบทความ</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="padding: 24px;">
-                    <div id="articleImageContainer" class="mb-4 d-none position-relative" style="margin: -24px -24px 30px -24px; padding: 40px 20px; text-align: center; background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #cbd5e1; overflow: hidden;">
-                        <img id="articleImage" src="" alt="Article Image" class="img-fluid" style="border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-height: 70vh; width: auto; max-width: 100%; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;" onmouseover="this.style.transform='scale(1.02) translateY(-5px)'" onmouseout="this.style.transform='scale(1) translateY(0)'">
-                    </div>
-                    <div class="mb-3">
-                        <span id="articleCategory" class="k-category">หมวดหมู่</span>
-                        <span class="text-muted ms-2" style="font-size: 0.85rem;"><i class="bi bi-clock"></i> <span
-                                id="articleDate"></span></span>
-                    </div>
-                    <div id="articleContent" style="color: #334155; line-height: 1.8;">
-                        <!-- Content goes here -->
+                <div class="modal-body" style="padding: 0;">
+                    <div id="articleCarousel" class="carousel slide" data-bs-touch="true" data-bs-interval="false">
+                        <div class="carousel-inner" id="carouselInner">
+                            <!-- Slides dynamically generated -->
+                        </div>
+                        <div id="carouselControls">
+                            <!-- Controls dynamically generated -->
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
@@ -353,19 +350,62 @@
             const article = articles.find(a => a.id === id);
             if (article) {
                 document.getElementById('articleTitle').innerText = article.title;
-                document.getElementById('articleCategory').innerText = article.category;
-                document.getElementById('articleDate').innerText = article.date;
-                document.getElementById('articleContent').innerHTML = article.content;
-
-                const imageContainer = document.getElementById('articleImageContainer');
-                const articleImage = document.getElementById('articleImage');
+                
+                const carouselInner = document.getElementById('carouselInner');
+                const controls = document.getElementById('carouselControls');
+                
+                let slidesHtml = '';
+                
                 if (article.image) {
-                    articleImage.src = article.image;
-                    imageContainer.classList.remove('d-none');
+                    slidesHtml += `
+                        <div class="carousel-item active">
+                            <div class="position-relative" style="padding: 40px 20px; text-align: center; background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%); overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1;">
+                                <img src="${article.image}" alt="Article Image" class="img-fluid" style="border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-height: 60vh; width: auto; max-width: 100%;">
+                            </div>
+                            <div class="text-center mt-4 mb-4 text-muted" style="font-size: 0.95rem; font-weight: 500;">
+                                <i class="bi bi-hand-index-thumb"></i> ปัดซ้ายหรือกดลูกศรเพื่ออ่านเนื้อหา <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div style="padding: 24px;">
+                                <div class="mb-3">
+                                    <span class="k-category">${article.category}</span>
+                                    <span class="text-muted ms-2" style="font-size: 0.85rem;"><i class="bi bi-clock"></i> ${article.date}</span>
+                                </div>
+                                <div style="color: #334155; line-height: 1.8;">
+                                    ${article.content}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    controls.innerHTML = `
+                        <button class="carousel-control-prev" type="button" data-bs-target="#articleCarousel" data-bs-slide="prev" style="width: 40px; background: rgba(0,0,0,0.2); margin: auto 0; height: 40px; top: 35%; transform: translateY(-50%); border-radius: 0 50% 50% 0;">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#articleCarousel" data-bs-slide="next" style="width: 40px; background: rgba(0,0,0,0.2); margin: auto 0; height: 40px; top: 35%; transform: translateY(-50%); border-radius: 50% 0 0 50%;">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    `;
                 } else {
-                    imageContainer.classList.add('d-none');
-                    articleImage.src = '';
+                    slidesHtml += `
+                        <div class="carousel-item active">
+                            <div style="padding: 24px;">
+                                <div class="mb-3">
+                                    <span class="k-category">${article.category}</span>
+                                    <span class="text-muted ms-2" style="font-size: 0.85rem;"><i class="bi bi-clock"></i> ${article.date}</span>
+                                </div>
+                                <div style="color: #334155; line-height: 1.8;">
+                                    ${article.content}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    controls.innerHTML = '';
                 }
+                
+                carouselInner.innerHTML = slidesHtml;
 
                 const pdfBtn = document.getElementById('pdfDownloadBtn');
                 if (article.pdfLink) {

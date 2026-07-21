@@ -452,22 +452,7 @@
                             return;
                         }
 
-                        // สรุปจำนวนชั่วโมงรวม (เฉพาะที่ผ่านการอบรม)
-                        let totalHours = 0;
-                        let passedCount = 0;
-                        records.forEach(r => {
-                            if (r.status === 'ผ่านการอบรม' || r.status === 'ผ่าน') {
-                                totalHours += parseFloat(r.duration) || 0;
-                                passedCount++;
-                            }
-                        });
-
-                        // แสดงกล่องสรุป
-                        let summaryHtml = `<div class="summary-box">
-                            <div class="hours">${totalHours} <span style="font-size:1rem;">ชั่วโมง</span></div>
-                            <div class="label">ชั่วโมงอบรมสะสม (ผ่านแล้ว ${passedCount} หลักสูตร)</div>
-                        </div>`;
-                        historyList.innerHTML = summaryHtml;
+                        // กล่องสรุปชั่วโมงอบรมถูกนำออกแล้ว
 
                         // แสดงรายการประวัติ
                         records.forEach(record => {
