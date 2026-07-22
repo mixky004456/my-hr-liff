@@ -561,6 +561,31 @@
             }).join('');
         }
 
+        function parseDateForSorting(dateStr) {
+            if (!dateStr) return 0;
+            const months = {
+                "ม.ค.": 0, "ก.พ.": 1, "มี.ค.": 2, "เม.ย.": 3, "พ.ค.": 4, "มิ.ย.": 5,
+                "ก.ค.": 6, "ส.ค.": 7, "ก.ย.": 8, "ต.ค.": 9, "พ.ย.": 10, "ธ.ค.": 11
+            };
+            const parts = String(dateStr).trim().split(/\s+/);
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]) || 1;
+                const month = months[parts[1]] !== undefined ? months[parts[1]] : 0;
+                let year = parseInt(parts[2]) || 2024;
+                if (year > 2500) year -= 543;
+                return new Date(year, month, day).getTime();
+            }
+            const slashParts = String(dateStr).trim().split('/');
+            if (slashParts.length === 3) {
+                const day = parseInt(slashParts[0]) || 1;
+                const month = parseInt(slashParts[1]) - 1 || 0;
+                let year = parseInt(slashParts[2]) || 2024;
+                if (year > 2500) year -= 543;
+                return new Date(year, month, day).getTime();
+            }
+            return 0;
+        }
+
         // ===== Render Training History (Only max 3 items, NO hours shown) =====
         function renderTrainingOverview(records) {
             const container = document.getElementById('trainingHistoryContainer');
@@ -574,8 +599,9 @@
                 return;
             }
 
-            // แสดงเฉพาะ 3 รายการล่าสุด
-            const top3Records = records.slice(0, 3);
+            // เรียงลำดับจากวันที่ล่าสุดไปหาเก่าสุด แล้วเลือก 3 รายการแรก
+            const sortedRecords = [...records].sort((a, b) => parseDateForSorting(b.date) - parseDateForSorting(a.date));
+            const top3Records = sortedRecords.slice(0, 3);
 
             let html = '';
             top3Records.forEach(item => {
