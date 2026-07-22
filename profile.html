@@ -658,8 +658,8 @@
                 return;
             }
 
-            // Set link to Training page
-            document.getElementById('btnGoToTraining').href = `training.html?uid=${encodeURIComponent(UID_FROM_LINE)}`;
+            // Set link to Training page (open directly on "ประวัติการอบรมของฉัน" tab)
+            document.getElementById('btnGoToTraining').href = `training.html?uid=${encodeURIComponent(UID_FROM_LINE)}&tab=history`;
 
             // Fetch employee data
             fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + UID_FROM_LINE)

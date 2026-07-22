@@ -548,6 +548,16 @@
 
                     // โหลดประวัติการอบรมจาก Google Sheet
                     loadTrainingHistory();
+
+                    // ถ้าส่ง tab=history หรือ #history มา ให้สลับไปแท็บประวัติการอบรมทันที
+                    const tabParam = urlParams.get('tab');
+                    if (tabParam === 'history' || window.location.hash === '#history') {
+                        const historyTabEl = document.getElementById('history-tab');
+                        if (historyTabEl) {
+                            const tab = new bootstrap.Tab(historyTabEl);
+                            tab.show();
+                        }
+                    }
                 })
                 .catch(error => {
                     document.getElementById('loadingSection').style.display = 'none';
