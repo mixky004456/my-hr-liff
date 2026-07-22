@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Employee Profile — โปรไฟล์พนักงาน</title>
+    <meta name="description" content="หน้าแสดงข้อมูลโปรไฟล์พนักงานในระบบ Employee Portal">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="config.js"></script>
+
+    <style>
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Thai", sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== Navbar ===== */
+        .navbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand i {
+            font-size: 1.1rem;
+            color: #38bdf8;
+        }
+
+        .navbar-date {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ===== Main Container ===== */
+        .main-container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+
+        /* ===== Loading & Error States ===== */
+        .state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .state-container p {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .error-icon {
+            width: 64px;
+            height: 64px;
+            background: #fef2f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #ef4444;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            font-weight: 600;
+            color: #ef4444;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .error-desc {
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        /* ===== Section 1: Profile Header Card ===== */
+        .profile-header-card {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            border-radius: 20px;
+            padding: 32px 24px 28px;
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+            margin-bottom: 16px;
+        }
+
+        .profile-header-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+
+        .profile-header-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -20%;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+        }
+
+        .avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 auto 16px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-nickname {
+            font-weight: 400;
+            opacity: 0.85;
+            font-size: 1rem;
+        }
+
+        .profile-position {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-emp-id {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== Section 2: Employee Info Card ===== */
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-title i {
+            font-size: 1.1rem;
+            color: #3b82f6;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 20px;
+            border-bottom: 1px solid #f8fafc;
+            transition: background-color 0.2s;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: #64748b;
+        }
+
+        .info-label i {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        /* ===== Section 3: Evaluation Cards ===== */
+        .eval-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+
+        .eval-section-title i {
+            font-size: 1.1rem;
+            color: #3b82f6;
+        }
+
+        .eval-cards-wrapper {
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .eval-card {
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .eval-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .eval-card.grade-a {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+        }
+
+        .eval-card.grade-b {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+        }
+
+        .eval-card.grade-c {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fde68a;
+        }
+
+        .eval-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .eval-period {
+            font-size: 0.8rem;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .eval-grade-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .eval-grade-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .eval-card.grade-a .eval-period,
+        .eval-card.grade-a .eval-grade-label,
+        .eval-card.grade-a .eval-grade-text,
+        .eval-card.grade-a .eval-summary {
+            color: #15803d;
+        }
+
+        .eval-card.grade-b .eval-period,
+        .eval-card.grade-b .eval-grade-label,
+        .eval-card.grade-b .eval-grade-text,
+        .eval-card.grade-b .eval-summary {
+            color: #1e40af;
+        }
+
+        .eval-card.grade-c .eval-period,
+        .eval-card.grade-c .eval-grade-label,
+        .eval-card.grade-c .eval-grade-text,
+        .eval-card.grade-c .eval-summary {
+            color: #b45309;
+        }
+
+        /* Score Ring */
+        .score-ring-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .score-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .score-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-ring-bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.06);
+            stroke-width: 5;
+        }
+
+        .score-ring-progress {
+            fill: none;
+            stroke-width: 5;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s ease;
+        }
+
+        .eval-card.grade-a .score-ring-progress {
+            stroke: #16a34a;
+        }
+
+        .eval-card.grade-b .score-ring-progress {
+            stroke: #2563eb;
+        }
+
+        .eval-card.grade-c .score-ring-progress {
+            stroke: #d97706;
+        }
+
+        .score-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .eval-summary {
+            font-size: 0.82rem;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+
+        /* ===== Section 4: Training History ===== */
+        .training-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            margin: 0 20px 12px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+        }
+
+        .training-summary-icon {
+            width: 44px;
+            height: 44px;
+            background: #3b82f6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .training-summary-hours {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            line-height: 1.2;
+        }
+
+        .training-summary-label {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Training Table */
+        .training-table-container {
+            padding: 0 20px 20px;
+            overflow-x: auto;
+        }
+
+        .training-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .training-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            padding: 10px 12px;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.78rem;
+        }
+
+        .training-table thead th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .training-table thead th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .training-table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .training-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .training-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .course-name-cell {
+            font-weight: 500;
+            color: #1e293b;
+            max-width: 160px;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-pass {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-fail {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-ongoing {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+
+        .badge-pending {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        /* Type Badges */
+        .badge-internal {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .badge-external {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+
+        .badge-ojt {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 12px 12px 32px;
+            }
+
+            .profile-header-card {
+                padding: 24px 16px 22px;
+            }
+
+            .profile-name {
+                font-size: 1.15rem;
+            }
+
+            .info-row {
+                padding: 12px 16px;
+            }
+
+            .training-table {
+                font-size: 0.76rem;
+            }
+
+            .training-table thead th,
+            .training-table tbody td {
+                padding: 10px 8px;
+            }
+
+            .eval-card {
+                padding: 14px;
+            }
+
+            .score-ring {
+                width: 52px;
+                height: 52px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="bi bi-building-gear"></i>
+            EMPLOYEE PORTAL
+        </div>
+        <div class="navbar-date">
+            <i class="bi bi-clock"></i>
+            <span id="navDate">-</span>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loadingSection" class="state-container">
+        <div class="spinner"></div>
+        <p>กำลังโหลดข้อมูลโปรไฟล์...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorSection" style="display:none;" class="state-container"></div>
+
+    <!-- Main Content -->
+    <div id="mainContent" style="display:none;" class="main-container">
+
+        <!-- Section 1: Profile Header -->
+        <div class="profile-header-card animate-in delay-1" id="profileHeaderCard">
+            <div class="avatar" id="profileAvatar">-</div>
+            <div class="profile-name" id="profileName">-</div>
+            <div class="profile-position" id="profilePosition">-</div>
+            <div class="profile-emp-id">
+                <i class="bi bi-person-badge"></i>
+                รหัสพนักงาน: <span id="profileEmpId">-</span>
+            </div>
+        </div>
+
+        <!-- Section 2: Employee Info -->
+        <div class="card animate-in delay-2">
+            <div class="card-title">
+                <i class="bi bi-person-lines-fill"></i>
+                ข้อมูลพนักงาน
+            </div>
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="bi bi-cake2"></i>
+                    อายุ
+                </div>
+                <div class="info-value" id="infoAge">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="bi bi-diagram-3"></i>
+                    แผนก
+                </div>
+                <div class="info-value" id="infoDepartment">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="bi bi-building"></i>
+                    ฝ่าย
+                </div>
+                <div class="info-value" id="infoDivision">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="bi bi-calendar-check"></i>
+                    วันเริ่มงาน
+                </div>
+                <div class="info-value" id="infoStartDate">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="bi bi-award"></i>
+                    วันที่บรรจุ
+                </div>
+                <div class="info-value" id="infoConfirmDate">-</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Evaluation -->
+        <div class="card animate-in delay-3">
+            <div class="eval-section-title">
+                <i class="bi bi-graph-up-arrow"></i>
+                ผลการประเมิน 2 ปีล่าสุด
+            </div>
+            <div class="eval-cards-wrapper" id="evalCardsWrapper">
+                <!-- Eval cards rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Section 4: Training History -->
+        <div class="card animate-in delay-4">
+            <div class="card-title">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                ประวัติการอบรม
+            </div>
+            <div id="trainingSummaryContainer">
+                <!-- Training summary rendered by JS -->
+            </div>
+            <div class="training-table-container" id="trainingTableContainer">
+                <!-- Training table rendered by JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== Utility Functions =====
+
+        function formatThaiDate(dateStr) {
+            // Handle various date formats and convert to Thai short format
+            if (!dateStr || dateStr === '-') return '-';
+            const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+                "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            let d;
+            if (dateStr instanceof Date) {
+                d = dateStr;
+            } else {
+                // Try DD/MM/YYYY format
+                const parts = String(dateStr).split('/');
+                if (parts.length === 3) {
+                    d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                } else {
+                    d = new Date(dateStr);
+                }
+            }
+            if (isNaN(d.getTime())) return String(dateStr);
+            const day = d.getDate();
+            const month = monthNames[d.getMonth()];
+            const year = d.getFullYear() + 543;
+            return `${day} ${month} ${year}`;
+        }
+
+        function getInitials(name) {
+            if (!name || name === '-') return '?';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return parts[0].charAt(0) + parts[1].charAt(0);
+            }
+            return parts[0].charAt(0);
+        }
+
+        function getGradeClass(grade) {
+            const g = String(grade).toUpperCase().replace('+', '');
+            if (g === 'A') return 'grade-a';
+            if (g === 'B') return 'grade-b';
+            if (g === 'C') return 'grade-c';
+            return 'grade-b'; // Default
+        }
+
+        function getStatusBadge(status) {
+            const s = String(status).trim();
+            if (s === 'ผ่าน' || s === 'ผ่านการอบรม') {
+                return `<span class="badge badge-pass"><i class="bi bi-check-circle-fill"></i> ผ่าน</span>`;
+            } else if (s === 'ไม่ผ่าน') {
+                return `<span class="badge badge-fail"><i class="bi bi-x-circle-fill"></i> ไม่ผ่าน</span>`;
+            } else if (s === 'กำลังอบรม') {
+                return `<span class="badge badge-ongoing"><i class="bi bi-hourglass-split"></i> กำลังอบรม</span>`;
+            } else if (s === 'รอเข้าอบรม') {
+                return `<span class="badge badge-pending"><i class="bi bi-clock"></i> รอเข้าอบรม</span>`;
+            } else {
+                return `<span class="badge badge-pending">${s}</span>`;
+            }
+        }
+
+        function getTypeBadge(type) {
+            const t = String(type).trim();
+            if (t === 'ภายใน') {
+                return `<span class="badge badge-internal">ภายใน</span>`;
+            } else if (t === 'ภายนอก') {
+                return `<span class="badge badge-external">ภายนอก</span>`;
+            } else if (t === 'OJT' || t === 'O.J.T.') {
+                return `<span class="badge badge-ojt">OJT</span>`;
+            }
+            return `<span class="badge badge-internal">${t}</span>`;
+        }
+
+        function createScoreRing(score, gradeClass) {
+            const radius = 24;
+            const circumference = 2 * Math.PI * radius;
+            const progress = (score / 100) * circumference;
+            const offset = circumference - progress;
+
+            return `
+                <div class="score-ring">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <circle class="score-ring-bg" cx="30" cy="30" r="${radius}" />
+                        <circle class="score-ring-progress" cx="30" cy="30" r="${radius}"
+                            stroke-dasharray="${circumference}"
+                            stroke-dashoffset="${offset}" />
+                    </svg>
+                    <div class="score-ring-text">${score}</div>
+                </div>
+            `;
+        }
+
+        // ===== Set Navbar Date =====
+        function setNavDate() {
+            const now = new Date();
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const day = now.getDate();
+            const month = thaiMonths[now.getMonth()];
+            const year = now.getFullYear() + 543;
+            document.getElementById('navDate').textContent = `${day} ${month} ${year}`;
+        }
+
+        // ===== Render Functions =====
+
+        function renderProfileHeader(emp) {
+            // Avatar initials
+            const avatarEl = document.getElementById('profileAvatar');
+            avatarEl.textContent = getInitials(emp.name);
+
+            // Name with nickname
+            const nameEl = document.getElementById('profileName');
+            if (emp.nickname) {
+                nameEl.innerHTML = `${emp.name} <span class="profile-nickname">(${emp.nickname})</span>`;
+            } else {
+                nameEl.textContent = emp.name;
+            }
+
+            // Position
+            document.getElementById('profilePosition').textContent = emp.position || '-';
+
+            // Employee ID
+            document.getElementById('profileEmpId').textContent = emp.empId || '-';
+        }
+
+        function renderEmployeeInfo(emp) {
+            document.getElementById('infoAge').textContent = emp.age ? `${emp.age} ปี` : '-';
+            document.getElementById('infoDepartment').textContent = emp.department || '-';
+            document.getElementById('infoDivision').textContent = emp.division || '-';
+            document.getElementById('infoStartDate').textContent = emp.startDate || '-';
+            document.getElementById('infoConfirmDate').textContent = emp.confirmDate || '-';
+        }
+
+        function renderEvaluations(evaluations) {
+            const wrapper = document.getElementById('evalCardsWrapper');
+
+            if (!evaluations || evaluations.length === 0) {
+                wrapper.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-clipboard-data"></i>
+                        <p>ยังไม่มีข้อมูลผลการประเมิน</p>
+                    </div>`;
+                return;
+            }
+
+            wrapper.innerHTML = evaluations.map(ev => {
+                const gradeClass = getGradeClass(ev.grade);
+                const scoreRing = createScoreRing(ev.score, gradeClass);
+
+                return `
+                    <div class="eval-card ${gradeClass}">
+                        <div class="eval-header">
+                            <div>
+                                <div class="eval-period"><i class="bi bi-calendar3"></i> ${ev.period}</div>
+                                <div class="score-ring-container">
+                                    ${scoreRing}
+                                    <div>
+                                        <div class="eval-grade-label">เกรดประเมิน</div>
+                                        <div class="eval-grade-text">${ev.grade}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="eval-summary">
+                            <i class="bi bi-chat-quote"></i> ${ev.summary}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrainingHistory(records) {
+            const summaryContainer = document.getElementById('trainingSummaryContainer');
+            const tableContainer = document.getElementById('trainingTableContainer');
+
+            if (!records || records.length === 0) {
+                summaryContainer.innerHTML = '';
+                tableContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-journal-x"></i>
+                        <p>ยังไม่มีประวัติการอบรม</p>
+                    </div>`;
+                return;
+            }
+
+            // Calculate total hours
+            let totalHours = 0;
+            records.forEach(r => {
+                totalHours += parseFloat(r.duration) || 0;
+            });
+
+            // Summary
+            summaryContainer.innerHTML = `
+                <div class="training-summary">
+                    <div class="training-summary-icon">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div>
+                        <div class="training-summary-hours">${totalHours} <span style="font-size:0.85rem;font-weight:500;">ชั่วโมง</span></div>
+                        <div class="training-summary-label">รวมชั่วโมงอบรมทั้งหมด (${records.length} หลักสูตร)</div>
+                    </div>
+                </div>
+            `;
+
+            // Table
+            let tableHTML = `
+                <table class="training-table">
+                    <thead>
+                        <tr>
+                            <th>ชื่อหลักสูตร</th>
+                            <th>วันที่</th>
+                            <th>ชม.</th>
+                            <th>สถานะ</th>
+                            <th>ประเภท</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            records.forEach(r => {
+                tableHTML += `
+                    <tr>
+                        <td class="course-name-cell">${r.courseName || '-'}</td>
+                        <td style="white-space:nowrap;">${r.date || '-'}</td>
+                        <td style="text-align:center;">${r.duration || '-'}</td>
+                        <td>${getStatusBadge(r.status)}</td>
+                        <td>${getTypeBadge(r.type)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // ===== Mock Data (สำหรับข้อมูลที่ยังไม่มีใน API) =====
+
+        function getMockExtendedData(empId) {
+            // ข้อมูลเพิ่มเติมที่ยังไม่มีใน Google Sheets
+            // เมื่อเพิ่มคอลัมน์ใน Sheets แล้ว ให้เปลี่ยนมาดึงจาก API แทน
+            const mockData = {
+                '1064': {
+                    nickname: 'เพ็ชร',
+                    age: 28,
+                    division: 'บุคคล',
+                    startDate: '1 มี.ค. 2567',
+                    confirmDate: '1 ก.ย. 2567'
+                }
+            };
+            return mockData[String(empId)] || {};
+        }
+
+        function getMockEvaluations(empId) {
+            // ข้อมูลผลประเมินจำลอง (เมื่อสร้างชีต EvaluationData แล้ว ให้ดึงจาก API แทน)
+            const mockEvals = {
+                '1064': [
+                    {
+                        period: 'ม.ค. – มิ.ย. 2568',
+                        grade: 'A',
+                        score: 92,
+                        summary: 'ผลงานโดดเด่น บรรลุเป้าหมายทุกด้าน มีความเป็นผู้นำสูง'
+                    },
+                    {
+                        period: 'ม.ค. – ธ.ค. 2567',
+                        grade: 'B+',
+                        score: 84,
+                        summary: 'ผลงานดีมาก บรรลุเป้าหมายหลัก มีพัฒนาการต่อเนื่อง'
+                    }
+                ]
+            };
+            return mockEvals[String(empId)] || [];
+        }
+
+        // ===== Main App Logic =====
+
+        window.onload = function () {
+            setNavDate();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const UID_FROM_LINE = urlParams.get('uid');
+
+            // 1. Check for UID
+            if (!UID_FROM_LINE) {
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('errorSection').innerHTML = `
+                    <div class="error-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <div class="error-title">ข้อผิดพลาด</div>
+                    <div class="error-desc">ไม่พบรหัสผู้ใช้งาน<br>กรุณาเข้าใช้งานผ่านปุ่มใน LINE เท่านั้น</div>
+                `;
+                document.getElementById('errorSection').style.display = 'flex';
+                return;
+            }
+
+            // 2. Fetch employee data from API
+            fetch(GAS_API_URL + "?action=getEmployeeData&uid=" + UID_FROM_LINE)
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('loadingSection').style.display = 'none';
+
+                    if (response.status !== 'success' || !response.data) {
+                        document.getElementById('errorSection').innerHTML = `
+                            <div class="error-icon"><i class="bi bi-person-x-fill"></i></div>
+                            <div class="error-title">ไม่พบข้อมูลพนักงาน</div>
+                            <div class="error-desc">ระบบไม่พบข้อมูลของคุณในฐานข้อมูล<br>กรุณาติดต่อ <strong>ฝ่ายบุคคล (HR)</strong><br>เพื่อดำเนินการลงทะเบียนเข้าใช้งาน</div>
+                        `;
+                        document.getElementById('errorSection').style.display = 'flex';
+                        return;
+                    }
+
+                    const emp = response.data;
+                    const empId = emp.empId;
+
+                    // Get mock data for fields not yet in API
+                    const extData = getMockExtendedData(empId);
+
+                    // Merge data
+                    const fullEmp = {
+                        name: emp.name,
+                        empId: emp.empId,
+                        position: emp.position,
+                        department: emp.department,
+                        nickname: emp.nickname || extData.nickname || '',
+                        age: emp.age || extData.age || null,
+                        division: emp.division || extData.division || '-',
+                        startDate: emp.startDate || extData.startDate || '-',
+                        confirmDate: emp.confirmDate || extData.confirmDate || '-'
+                    };
+
+                    // Render Section 1 & 2
+                    renderProfileHeader(fullEmp);
+                    renderEmployeeInfo(fullEmp);
+
+                    // Render Section 3: Evaluations (mock for now)
+                    const evaluations = getMockEvaluations(empId);
+                    renderEvaluations(evaluations);
+
+                    // Render Section 4: Training History from API
+                    loadTrainingHistory(empId);
+
+                    // Show main content
+                    document.getElementById('mainContent').style.display = 'block';
+                })
+                .catch(error => {
+                    document.getElementById('loadingSection').style.display = 'none';
+                    document.getElementById('errorSection').innerHTML = `
+                        <div class="error-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <div class="error-title">ข้อผิดพลาดระบบ</div>
+                        <div class="error-desc">${error.message}</div>
+                    `;
+                    document.getElementById('errorSection').style.display = 'flex';
+                });
+        };
+
+        function loadTrainingHistory(empId) {
+            const summaryContainer = document.getElementById('trainingSummaryContainer');
+            const tableContainer = document.getElementById('trainingTableContainer');
+
+            // Show loading
+            tableContainer.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#94a3b8;">
+                    <div class="spinner" style="width:30px;height:30px;border-width:3px;margin:0 auto;"></div>
+                    <p style="margin-top:12px; font-size:0.82rem;">กำลังโหลดประวัติการอบรม...</p>
+                </div>
+            `;
+
+            fetch(GAS_API_URL + "?action=getMyTrainingHistory&empId=" + encodeURIComponent(empId))
+                .then(res => res.json())
+                .then(response => {
+                    if (response.status === 'success' && response.data) {
+                        renderTrainingHistory(response.data);
+                    } else {
+                        renderTrainingHistory([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading training history:', error);
+                    tableContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <p>ไม่สามารถโหลดประวัติการอบรมได้</p>
+                        </div>
+                    `;
+                });
+        }
+    </script>
+
+</body>
+
+</html>
