@@ -278,7 +278,7 @@
 
                         <div id="otherQuotasContainer"
                             style="display: none; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
-                            <div class="progress-row"
+                            <div class="progress-row" id="row-qt-maternity"
                                 style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
                                 <div class="progress-label" style="flex: 1;">ลาคลอด
                                     <i class="bi bi-info-circle-fill text-secondary ms-1"
@@ -292,18 +292,18 @@
                                 </div>
                                 <div class="progress-text" style="flex: 1; text-align: right;" id="qt-maternity">-</div>
                             </div>
-                            <div class="progress-row"
+                            <div class="progress-row" id="row-qt-sterilization"
                                 style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
                                 <div class="progress-label" style="flex: 1;">ทำหมัน</div>
                                 <div class="progress-text" style="flex: 1; text-align: right;" id="qt-sterilization">-
                                 </div>
                             </div>
-                            <div class="progress-row"
+                            <div class="progress-row" id="row-qt-military"
                                 style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
                                 <div class="progress-label" style="flex: 1;">รับราชการทหาร</div>
                                 <div class="progress-text" style="flex: 1; text-align: right;" id="qt-military">-</div>
                             </div>
-                            <div class="progress-row"
+                            <div class="progress-row" id="row-qt-training"
                                 style="padding: 8px 15px; margin-bottom: 8px; background: transparent; box-shadow: none; border: 1px solid #e2e8f0;">
                                 <div class="progress-label" style="flex: 1;">อบรม</div>
                                 <div class="progress-text" style="flex: 1; text-align: right;" id="qt-training">-</div>
@@ -537,6 +537,8 @@
                     document.getElementById('qt-training').innerHTML = `<span style="color:#0f172a; font-weight:600;">${emp.used['อบรม_count'] || 0} / 2 ครั้ง</span>`;
 
                     empQuotas = emp.used;
+                    currentUserGender = emp.gender || '';
+                    applyGenderLeaveFilter(currentUserGender);
                 })
                 .withFailureHandler(function (error) {
                     Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message, 'error');
@@ -544,15 +546,70 @@
                 .getEmployeeData(userId);
         }
 
+        let currentUserGender = '';
+
+        function isMaleGender(gStr) {
+            if (!gStr) return false;
+            let s = String(gStr).trim().toLowerCase();
+            return s.indexOf('ชาย') !== -1 || s === 'male' || s === 'm';
+        }
+
+        function isFemaleGender(gStr) {
+            if (!gStr) return false;
+            let s = String(gStr).trim().toLowerCase();
+            return s.indexOf('หญิง') !== -1 || s === 'female' || s === 'f';
+        }
+
+        function applyGenderLeaveFilter(genderStr) {
+            let optMaternity = document.querySelector('#leaveType option[value="ลาคลอด"]');
+            let optMilitary = document.querySelector('#leaveType option[value="รับราชการทหาร"]');
+            let rowMaternity = document.getElementById('row-qt-maternity');
+            let rowMilitary = document.getElementById('row-qt-military');
+
+            if (isMaleGender(genderStr)) {
+                if (optMaternity) {
+                    optMaternity.disabled = true;
+                    optMaternity.hidden = true;
+                    optMaternity.style.display = 'none';
+                }
+                if (rowMaternity) rowMaternity.style.display = 'none';
+            } else if (isFemaleGender(genderStr)) {
+                if (optMilitary) {
+                    optMilitary.disabled = true;
+                    optMilitary.hidden = true;
+                    optMilitary.style.display = 'none';
+                }
+                if (rowMilitary) rowMilitary.style.display = 'none';
+            }
+            updateOtherQuotasCount();
+        }
+
+        function updateOtherQuotasCount() {
+            let container = document.getElementById('otherQuotasContainer');
+            if (!container) return;
+            let rows = container.querySelectorAll('.progress-row');
+            let visibleCount = Array.from(rows).filter(r => r.style.display !== 'none').length;
+            let btn = document.getElementById('btnToggleOtherQuotas');
+            if (btn) {
+                btn.setAttribute('data-visible-count', visibleCount);
+                if (container.style.display === 'none') {
+                    btn.innerHTML = `+ ดูสิทธิการลาอื่นๆ อีก ${visibleCount} ประเภท ▼`;
+                } else {
+                    btn.innerHTML = `- ซ่อนสิทธิการลาอื่นๆ ▲`;
+                }
+            }
+        }
+
         function toggleOtherQuotas() {
             let container = document.getElementById('otherQuotasContainer');
             let btn = document.getElementById('btnToggleOtherQuotas');
+            let count = btn ? (btn.getAttribute('data-visible-count') || 4) : 4;
             if (container.style.display === 'none') {
                 container.style.display = 'block';
                 btn.innerHTML = '- ซ่อนสิทธิการลาอื่นๆ ▲';
             } else {
                 container.style.display = 'none';
-                btn.innerHTML = '+ ดูสิทธิการลาอื่นๆ อีก 4 ประเภท ▼';
+                btn.innerHTML = `+ ดูสิทธิการลาอื่นๆ อีก ${count} ประเภท ▼`;
             }
         }
 
@@ -752,6 +809,15 @@
 
             if (minAllowed && startD < minAllowed) {
                 Swal.fire('ข้อผิดพลาด', msg, 'error');
+                return;
+            }
+
+            if (isMaleGender(currentUserGender) && type === 'ลาคลอด') {
+                Swal.fire('ข้อผิดพลาด', 'พนักงานชายไม่สามารถยื่นลาคลอดได้ครับ', 'error');
+                return;
+            }
+            if (isFemaleGender(currentUserGender) && type === 'รับราชการทหาร') {
+                Swal.fire('ข้อผิดพลาด', 'พนักงานหญิงไม่สามารถยื่นลารับราชการทหารได้ครับ', 'error');
                 return;
             }
 
