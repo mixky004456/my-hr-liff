@@ -506,38 +506,10 @@
             document.getElementById('navDate').textContent = `${day} ${month} ${year}`;
         }
 
-        // ===== Mock Data (สำหรับข้อมูลเพิ่มเติมที่ยังไม่มีใน Sheets) =====
-        function getMockExtendedData(empId) {
-            const mockData = {
-                '1064': {
-                    nickname: 'เพ็ชร',
-                    age: 28,
-                    division: 'บุคคล',
-                    startDate: '1 มี.ค. 2567',
-                    confirmDate: '1 ก.ย. 2567'
-                }
-            };
-            return mockData[String(empId)] || {};
-        }
-
-        function getMockEvaluations(empId) {
-            const mockEvals = {
-                '1064': [
-                    {
-                        period: 'ม.ค. – มิ.ย. 2568',
-                        grade: 'A',
-                        score: 92,
-                        summary: 'ผลงานโดดเด่น บรรลุเป้าหมายทุกด้าน มีความเป็นผู้นำสูง'
-                    },
-                    {
-                        period: 'ม.ค. – ธ.ค. 2567',
-                        grade: 'B+',
-                        score: 84,
-                        summary: 'ผลงานดีมาก บรรลุเป้าหมายหลัก มีพัฒนาการต่อเนื่อง'
-                    }
-                ]
-            };
-            return mockEvals[String(empId)] || [];
+        // ===== ผลการประเมิน (รอเชื่อมต่อกับ Google Sheets ในอนาคต) =====
+        function getEvaluations(empId) {
+            // ในอนาคตจะดึงข้อมูลจาก Google Sheets ตอนนี้ให้ส่งค่าเป็นอาร์เรย์ว่างไปก่อน
+            return [];
         }
 
         // ===== Render Profile Header & Details =====
@@ -558,7 +530,7 @@
             document.getElementById('infoDepartment').textContent = emp.department || '-';
             document.getElementById('infoDivision').textContent = emp.division || '-';
             document.getElementById('infoStartDate').textContent = emp.startDate || '-';
-            document.getElementById('infoConfirmDate').textContent = emp.confirmDate || '-';
+            document.getElementById('infoConfirmDate').textContent = emp.workTenure || '-';
         }
 
         function renderEvaluations(evaluations) {
@@ -741,24 +713,10 @@
                     const emp = response.data;
                     currentEmpId = emp.empId;
 
-                    const extData = getMockExtendedData(currentEmpId);
+                    renderProfileHeader(emp);
+                    renderEmployeeInfo(emp);
 
-                    const fullEmp = {
-                        name: emp.name,
-                        empId: emp.empId,
-                        position: emp.position,
-                        department: emp.department,
-                        nickname: emp.nickname || extData.nickname || '',
-                        age: emp.age || extData.age || null,
-                        division: emp.division || extData.division || '-',
-                        startDate: emp.startDate || extData.startDate || '-',
-                        confirmDate: emp.confirmDate || extData.confirmDate || '-'
-                    };
-
-                    renderProfileHeader(fullEmp);
-                    renderEmployeeInfo(fullEmp);
-
-                    const evaluations = getMockEvaluations(currentEmpId);
+                    const evaluations = getEvaluations(currentEmpId);
                     renderEvaluations(evaluations);
 
                     loadTrainingHistory(currentEmpId);
