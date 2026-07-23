@@ -240,9 +240,20 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .eval-card.grade-a .score-circle { border: 3px solid #16a34a; color: #16a34a; }
-        .eval-card.grade-b .score-circle { border: 3px solid #2563eb; color: #2563eb; }
-        .eval-card.grade-c .score-circle { border: 3px solid #d97706; color: #d97706; }
+        .eval-card.grade-a .score-circle {
+            border: 3px solid #16a34a;
+            color: #16a34a;
+        }
+
+        .eval-card.grade-b .score-circle {
+            border: 3px solid #2563eb;
+            color: #2563eb;
+        }
+
+        .eval-card.grade-c .score-circle {
+            border: 3px solid #d97706;
+            color: #d97706;
+        }
 
         .eval-grade-display {
             font-size: 1.5rem;
@@ -295,10 +306,25 @@
             font-weight: 500;
         }
 
-        .badge-pass { background-color: #dcfce7; color: #16a34a; }
-        .badge-fail { background-color: #fee2e2; color: #dc2626; }
-        .badge-ongoing { background-color: #fef3c7; color: #d97706; }
-        .badge-pending { background-color: #e0f2fe; color: #0284c7; }
+        .badge-pass {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-fail {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-ongoing {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-pending {
+            background-color: #e0f2fe;
+            color: #0284c7;
+        }
 
         .badge-type {
             font-size: 0.72rem;
@@ -307,9 +333,20 @@
             font-weight: 500;
         }
 
-        .badge-type-internal { background-color: #e0f2fe; color: #0284c7; }
-        .badge-type-external { background-color: #fef3c7; color: #d97706; }
-        .badge-type-ojt { background-color: #ede9fe; color: #7c3aed; }
+        .badge-type-internal {
+            background-color: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .badge-type-external {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-type-ojt {
+            background-color: #ede9fe;
+            color: #7c3aed;
+        }
 
         .btn-view-more {
             background-color: #f0fdf4;
@@ -409,7 +446,7 @@
                         <div class="info-value" id="infoStartDate">-</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label"><i class="bi bi-award"></i> วันที่บรรจุ</div>
+                        <div class="info-label"><i class="bi bi-award"></i> อายุงาน</div>
                         <div class="info-value" id="infoConfirmDate">-</div>
                     </div>
                 </div>
@@ -548,9 +585,6 @@
                             <div>
                                 <div class="eval-period"><i class="bi bi-calendar3"></i> ${ev.period}</div>
                                 <div class="eval-grade-display mt-1">เกรด ${ev.grade}</div>
-                            </div>
-                            <div class="score-circle">
-                                ${ev.score}
                             </div>
                         </div>
                         <div class="eval-summary">
