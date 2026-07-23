@@ -375,9 +375,234 @@
             line-height: 1.6;
         }
 
+        /* ---------- ปุ่มดูโปรไฟล์ ---------- */
+        .btn-profile {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
+            color: var(--brand);
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-profile:hover {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .btn-profile:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
+
+        /* ---------- หน้าต่างโปรไฟล์ ---------- */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 1050;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .overlay.open {
+            display: flex;
+        }
+
+        .sheet {
+            background: #fff;
+            width: 100%;
+            max-width: 560px;
+            border-radius: 22px 22px 0 0;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(28px);
+                opacity: 0;
+            }
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .sheet-head h5 {
+            margin: 0;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .sheet-close {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: var(--muted);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .sheet-close:hover {
+            background: var(--line);
+        }
+
+        .sheet-body {
+            padding: 8px 22px 28px;
+            overflow-y: auto;
+        }
+
+        /* ---------- ตัวติดตามขั้นตอน ---------- */
+        .track-card {
+            border: 1.5px solid var(--line);
+            border-radius: 16px;
+            padding: 17px 18px;
+            margin-bottom: 14px;
+            background: #fff;
+        }
+
+        .track-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .track-meta {
+            font-size: 0.83rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .steps {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 auto 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            color: #cbd5e1;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step.done .step-dot {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+        }
+
+        .step.current .step-dot {
+            background: #fff;
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        .step.failed .step-dot {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #fff;
+        }
+
+        .step-bar {
+            position: absolute;
+            top: 14px;
+            left: -50%;
+            width: 100%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .step.done .step-bar,
+        .step.current .step-bar {
+            background: var(--brand);
+        }
+
+        .step.failed .step-bar {
+            background: #dc2626;
+        }
+
+        .step:first-child .step-bar {
+            display: none;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .step.done .step-label,
+        .step.current .step-label {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .step-sub {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .track-foot {
+            margin-top: 15px;
+            padding-top: 13px;
+            border-top: 1px dashed var(--line);
+            font-size: 0.83rem;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 12px 8px;
+            }
+
+            .step-label {
+                font-size: 0.68rem;
+            }
+
+            .step-sub {
+                display: none;
             }
 
             .card-body {
@@ -469,6 +694,9 @@
                                     &nbsp;|&nbsp;
                                     <i class="bi bi-diagram-3"></i> <span id="displayDept">-</span>
                                     <br><i class="bi bi-briefcase"></i> <span id="displayPosition">-</span>
+                                    <button type="button" class="btn-profile" onclick="openProfile()">
+                                        <i class="bi bi-person-vcard"></i> ดูโปรไฟล์
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -493,8 +721,8 @@
                         <button class="tab-btn" id="tab-history" role="tab" onclick="switchTab('history')">
                             <i class="bi bi-clock-history"></i> ประวัติการลา
                         </button>
-                        <button class="tab-btn" id="tab-profile" role="tab" onclick="switchTab('profile')">
-                            <i class="bi bi-person-badge"></i> ข้อมูลของฉัน
+                        <button class="tab-btn" id="tab-status" role="tab" onclick="switchTab('status')">
+                            <i class="bi bi-signpost-split"></i> สถานะคำขอ
                         </button>
                     </div>
 
@@ -649,25 +877,52 @@
                         </div>
                     </div>
 
-                    <!-- ======== แท็บ: ข้อมูลของฉัน ======== -->
-                    <div id="view-profile" style="display:none;">
-                        <div id="profileInfo"></div>
-
-                        <div style="margin-top:22px; padding-top:18px; border-top:1px dashed var(--line);">
-                            <label class="form-label" for="profilePhone">
-                                <i class="bi bi-telephone"></i> เบอร์โทรศัพท์
-                            </label>
-                            <input type="tel" class="form-control" id="profilePhone" placeholder="0xx-xxx-xxxx">
-                            <button type="button" class="btn btn-primary w-100" id="saveProfileBtn"
-                                onclick="saveProfile()">
-                                <i class="bi bi-check-lg"></i> บันทึกการเปลี่ยนแปลง
+                    <!-- ======== แท็บ: สถานะคำขอ ======== -->
+                    <div id="view-status" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div style="font-size:0.88rem; color:var(--muted);">
+                                คำขอที่ยังอยู่ระหว่างดำเนินการ
+                            </div>
+                            <button type="button" class="btn-ghost" onclick="loadLeaveHistory(true)">
+                                <i class="bi bi-arrow-clockwise"></i> รีเฟรช
                             </button>
-                            <div style="font-size:0.8rem; color:var(--muted); margin-top:12px; text-align:center;">
-                                ต้องการแก้ไขข้อมูลอื่น กรุณาติดต่อฝ่ายบุคคล
+                        </div>
+                        <div id="statusList">
+                            <div class="text-center py-4">
+                                <div class="spinner-border spinner-border-sm" style="color: var(--brand);"
+                                    role="status"></div>
                             </div>
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== หน้าต่างโปรไฟล์พนักงาน ======== -->
+    <div id="profileOverlay" class="overlay" onclick="if(event.target===this) closeProfile()">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+            <div class="sheet-head">
+                <h5 id="profileTitle"><i class="bi bi-person-vcard"></i> โปรไฟล์พนักงาน</h5>
+                <button type="button" class="sheet-close" onclick="closeProfile()" aria-label="ปิด">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="sheet-body">
+                <div id="profileInfo"></div>
+
+                <div style="margin-top:20px; padding-top:16px; border-top:1px dashed var(--line);">
+                    <label class="form-label" for="profilePhone">
+                        <i class="bi bi-telephone"></i> เบอร์โทรศัพท์
+                    </label>
+                    <input type="tel" class="form-control" id="profilePhone" placeholder="0xx-xxx-xxxx">
+                    <button type="button" class="btn btn-primary w-100" id="saveProfileBtn" onclick="saveProfile()">
+                        <i class="bi bi-check-lg"></i> บันทึกการเปลี่ยนแปลง
+                    </button>
+                    <div style="font-size:0.8rem; color:var(--muted); margin-top:12px; text-align:center;">
+                        ต้องการแก้ไขข้อมูลอื่น กรุณาติดต่อฝ่ายบุคคล
+                    </div>
                 </div>
             </div>
         </div>
@@ -769,7 +1024,6 @@
                 renderEmployeeCard();
                 renderQuotas();
                 buildLeaveTypeOptions();
-                renderProfile();
 
             } catch (err) {
                 showError('เชื่อมต่อไม่สำเร็จ', err.message + '<br>กรุณาตรวจสอบสัญญาณอินเทอร์เน็ตแล้วลองใหม่');
@@ -883,12 +1137,30 @@
         //  แท็บ
         // =============================================================
         function switchTab(name) {
-            ['form', 'history', 'profile'].forEach(function (t) {
+            ['form', 'history', 'status'].forEach(function (t) {
                 document.getElementById('tab-' + t).classList.toggle('active', t === name);
                 document.getElementById('view-' + t).style.display = (t === name) ? 'block' : 'none';
             });
-            if (name === 'history' && !historyLoaded) loadLeaveHistory();
+            if ((name === 'history' || name === 'status') && !historyLoaded) loadLeaveHistory();
         }
+
+        // =============================================================
+        //  หน้าต่างโปรไฟล์
+        // =============================================================
+        function openProfile() {
+            renderProfile();
+            document.getElementById('profileOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProfile() {
+            document.getElementById('profileOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeProfile();
+        });
 
         // =============================================================
         //  ฟอร์มยื่นใบลา
@@ -1313,7 +1585,7 @@
                 renderQuotas();
                 buildLeaveTypeOptions();
                 historyLoaded = false;
-                switchTab('history');
+                switchTab('status');
 
             } catch (err) {
                 Swal.fire({
@@ -1346,6 +1618,13 @@
             return 'st-pending';
         }
 
+        /** ใบลานี้ยังอยู่ระหว่างดำเนินการหรือยัง */
+        function isInProgress(st) {
+            return st === CONFIG.status.WAIT_SUP ||
+                st === CONFIG.status.WAIT_HR ||
+                st === CONFIG.status.LEGACY_PENDING;
+        }
+
         function escapeHtml(str) {
             return String(str || '').replace(/[&<>"']/g, function (c) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -1357,8 +1636,10 @@
             document.getElementById('historyYear').textContent = (CONFIG.year + 543);
 
             if (force) {
-                list.innerHTML = '<div class="text-center py-4">' +
+                const spinner = '<div class="text-center py-4">' +
                     '<div class="spinner-border spinner-border-sm" style="color:var(--brand);" role="status"></div></div>';
+                list.innerHTML = spinner;
+                document.getElementById('statusList').innerHTML = spinner;
             }
 
             try {
@@ -1372,10 +1653,13 @@
                 HISTORY = (response.status === 'success' && response.data) ? response.data : [];
                 historyLoaded = true;
                 renderHistory();
+                renderStatusTracker();
             } catch (err) {
-                list.innerHTML = '<div class="empty-state"><i class="bi bi-wifi-off"></i>' +
-                    'โหลดประวัติไม่สำเร็จ<br><span style="font-size:0.85rem;">' +
+                const msg = '<div class="empty-state"><i class="bi bi-wifi-off"></i>' +
+                    'โหลดข้อมูลไม่สำเร็จ<br><span style="font-size:0.85rem;">' +
                     escapeHtml(err.message) + '</span></div>';
+                list.innerHTML = msg;
+                document.getElementById('statusList').innerHTML = msg;
             }
         }
 
@@ -1405,9 +1689,17 @@
                 }
 
                 let noteHtml = '';
-                if (item.note && item.status === CONFIG.status.REJECTED) {
+                if (item.status === CONFIG.status.REJECTED && item.note) {
                     noteHtml = '<div style="margin-top:7px;color:#b91c1c;font-size:0.83rem;">' +
-                        '<i class="bi bi-info-circle"></i> ' + escapeHtml(item.note) + '</div>';
+                        '<i class="bi bi-x-circle"></i> ' + escapeHtml(item.note) + '</div>';
+                } else if (item.hrName) {
+                    noteHtml = '<div style="margin-top:7px;color:#15803d;font-size:0.82rem;">' +
+                        '<i class="bi bi-patch-check"></i> ฝ่ายบุคคลอนุมัติโดย ' +
+                        escapeHtml(item.hrName) + '</div>';
+                } else if (item.supName) {
+                    noteHtml = '<div style="margin-top:7px;color:#0e7490;font-size:0.82rem;">' +
+                        '<i class="bi bi-person-check"></i> หัวหน้าอนุมัติโดย ' +
+                        escapeHtml(item.supName) + '</div>';
                 }
 
                 return '<div class="leave-item">' +
@@ -1467,6 +1759,7 @@
 
                 renderQuotas();
                 buildLeaveTypeOptions();
+                historyLoaded = false;
                 loadLeaveHistory(true);
 
             } catch (err) {
@@ -1480,7 +1773,140 @@
         }
 
         // =============================================================
-        //  ข้อมูลของฉัน
+        //  ตัวติดตามขั้นตอนคำขอ
+        // =============================================================
+
+        /**
+         * แปลงสถานะใบลาเป็นสถานะของ 4 ขั้นตอน
+         * ยื่นคำขอ → หัวหน้า → ฝ่ายบุคคล → มีผล
+         */
+        function buildSteps(item) {
+            const S = CONFIG.status;
+            const steps = [
+                { label: 'ยื่นคำขอ', sub: item.timestamp ? item.timestamp.split(' ')[0] : '', icon: 'bi-send' },
+                { label: 'หัวหน้า', sub: '', icon: 'bi-person-check' },
+                { label: 'ฝ่ายบุคคล', sub: '', icon: 'bi-buildings' },
+                { label: 'มีผล', sub: '', icon: 'bi-check2-all' }
+            ];
+
+            steps[0].state = 'done';
+
+            if (item.status === S.CANCELLED) {
+                steps[1].state = 'failed';
+                steps[1].sub = 'ยกเลิกแล้ว';
+                steps[2].state = '';
+                steps[3].state = '';
+                return steps;
+            }
+
+            // ขั้นหัวหน้า
+            if (item.supName) {
+                const supRejected = item.status === S.REJECTED && !item.hrName;
+                steps[1].state = supRejected ? 'failed' : 'done';
+                steps[1].sub = item.supName;
+            } else if (item.status === S.WAIT_SUP || item.status === S.LEGACY_PENDING) {
+                steps[1].state = 'current';
+                steps[1].sub = 'รอพิจารณา';
+            }
+
+            // ขั้นฝ่ายบุคคล
+            if (item.hrName) {
+                steps[2].state = (item.status === S.REJECTED) ? 'failed' : 'done';
+                steps[2].sub = item.hrName;
+            } else if (item.status === S.WAIT_HR) {
+                steps[2].state = 'current';
+                steps[2].sub = 'รอพิจารณา';
+            }
+
+            // ขั้นสุดท้าย
+            if (item.status === S.APPROVED) {
+                steps[3].state = 'done';
+                steps[3].sub = 'อนุมัติแล้ว';
+            } else if (item.status === S.REJECTED) {
+                steps[3].state = 'failed';
+                steps[3].sub = 'ไม่อนุมัติ';
+            }
+
+            return steps;
+        }
+
+        function stepsHtml(item) {
+            return '<div class="steps">' + buildSteps(item).map(function (st) {
+                const cls = st.state ? ' ' + st.state : '';
+                const mark = st.state === 'done'
+                    ? '<i class="bi bi-check-lg"></i>'
+                    : (st.state === 'failed'
+                        ? '<i class="bi bi-x-lg"></i>'
+                        : '<i class="bi ' + st.icon + '"></i>');
+
+                return '<div class="step' + cls + '">' +
+                    '<div class="step-bar"></div>' +
+                    '<div class="step-dot">' + mark + '</div>' +
+                    '<div class="step-label">' + st.label + '</div>' +
+                    (st.sub ? '<div class="step-sub">' + escapeHtml(st.sub) + '</div>' : '') +
+                    '</div>';
+            }).join('') + '</div>';
+        }
+
+        function renderStatusTracker() {
+            const el = document.getElementById('statusList');
+            const active = HISTORY.filter(function (h) { return isInProgress(h.status); });
+
+            if (!active.length) {
+                const recent = HISTORY.slice(0, 3);
+                el.innerHTML =
+                    '<div class="empty-state" style="padding:34px 20px;">' +
+                    '<i class="bi bi-check2-circle" style="color:#86efac;"></i>' +
+                    'ไม่มีคำขอที่รอดำเนินการ<br>' +
+                    '<span style="font-size:0.85rem;">คำขอของคุณได้รับการพิจารณาครบแล้ว</span></div>' +
+                    (recent.length
+                        ? '<div style="font-size:0.85rem;color:var(--muted);margin:6px 0 12px;">' +
+                        'รายการล่าสุด</div>' + recent.map(trackCard).join('')
+                        : '');
+                return;
+            }
+
+            el.innerHTML = active.map(trackCard).join('');
+        }
+
+        function trackCard(item) {
+            const dateText = item.startDate === item.endDate
+                ? item.startDateThai
+                : item.startDateThai + ' - ' + item.endDateThai;
+
+            let foot = '';
+            if (item.status === CONFIG.status.REJECTED && item.note) {
+                foot = '<div class="track-foot" style="color:#b91c1c;">' +
+                    '<i class="bi bi-x-circle"></i> ' + escapeHtml(item.note) + '</div>';
+            } else if (isInProgress(item.status)) {
+                const who = item.status === CONFIG.status.WAIT_HR ? 'ฝ่ายบุคคล' : 'หัวหน้า';
+                foot = '<div class="track-foot">' +
+                    '<span style="color:var(--muted);"><i class="bi bi-hourglass-split"></i> ' +
+                    'กำลังรอ' + who + 'พิจารณา ระบบแจ้งเตือนให้แล้ว</span>';
+                if (item.canCancel) {
+                    foot += '<button type="button" class="btn-sm-outline danger" style="margin-left:auto;" ' +
+                        'onclick="confirmCancel(' + item.rowIndex + ')">' +
+                        '<i class="bi bi-x-circle"></i> ถอนคำขอ</button>';
+                }
+                foot += '</div>';
+            }
+
+            return '<div class="track-card">' +
+                '<div class="track-head">' +
+                '<div class="leave-type">' + escapeHtml(item.leaveType) + '</div>' +
+                '<span class="badge-status ' + statusClass(item.status) + '">' +
+                escapeHtml(item.status) + '</span></div>' +
+                '<div class="track-meta">' +
+                '<i class="bi bi-calendar3"></i> ' + escapeHtml(dateText) +
+                ' &nbsp;<span style="color:#cbd5e1;">|</span>&nbsp; ' +
+                '<i class="bi bi-hourglass-split"></i> ' + escapeHtml(item.durationText) +
+                '</div>' +
+                stepsHtml(item) + foot +
+                '</div>';
+        }
+
+        // =============================================================
+        //  โปรไฟล์พนักงาน
         // =============================================================
         function renderProfile() {
             const rows = [
@@ -1527,6 +1953,7 @@
 
                 if (response.data) EMP = response.data;
                 renderProfile();
+                closeProfile();
 
                 Swal.fire({
                     icon: 'success',
