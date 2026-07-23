@@ -694,9 +694,9 @@
                                     &nbsp;|&nbsp;
                                     <i class="bi bi-diagram-3"></i> <span id="displayDept">-</span>
                                     <br><i class="bi bi-briefcase"></i> <span id="displayPosition">-</span>
-                                    <a href="#" id="btnViewProfile" class="btn-profile">
+                                    <button type="button" class="btn-profile" onclick="openProfile()">
                                         <i class="bi bi-person-vcard"></i> ดูโปรไฟล์
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1038,7 +1038,6 @@
             document.getElementById('displayEmpId').textContent = EMP.empId || '-';
             document.getElementById('displayDept').textContent = EMP.department || '-';
             document.getElementById('displayPosition').textContent = EMP.position || '-';
-            document.getElementById('btnViewProfile').href = 'profile.html?uid=' + encodeURIComponent(USER_ID);
         }
 
         /** ประเภทการลานี้ตรงกับเพศของพนักงานไหม */
@@ -1149,9 +1148,7 @@
         //  หน้าต่างโปรไฟล์
         // =============================================================
         function openProfile() {
-            renderProfile();
-            document.getElementById('profileOverlay').classList.add('open');
-            document.body.style.overflow = 'hidden';
+            window.location.href = 'profile.html?uid=' + encodeURIComponent(USER_ID);
         }
 
         function closeProfile() {
