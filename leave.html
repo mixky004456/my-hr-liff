@@ -1570,7 +1570,7 @@
                 // อัปเดตยอดคงเหลือจากที่ backend คำนวณกลับมา ไม่ต้องรีโหลดหน้า
                 if (response.data && response.data.used) EMP.used = response.data.used;
 
-                let successText = 'ระบบบันทึกคำขอลางานของคุณเรียบร้อยแล้ว รอฝ่ายบุคคลอนุมัติ';
+                let successText = 'ระบบบันทึกคำขอลางานของคุณเรียบร้อยแล้ว และได้ส่งแจ้งเตือนไปยังหัวหน้าเรียบร้อยแล้ว';
                 if (response.warnings && response.warnings.length) {
                     successText += '\n\nหมายเหตุ: ' + response.warnings.join(' / ');
                 }
